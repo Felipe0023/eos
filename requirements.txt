@@ -1,0 +1,13 @@
+streamlit>=1.30.0
+pandas
+numpy
+joblib
+plotly
+matplotlib
+seaborn
+rasterio
+Pillow
+scikit-learn
+xgboost
+statsmodels
+shap
