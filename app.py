@@ -18,14 +18,14 @@ import os
 import sys
 import base64
 
-import appk001ubicacion
-import appk002zonaestud
-import appk003preproces
-import appk004modelalit
-import appk005pronoslit 
-import appk006modlog10k
-import appk007prolog10k
-import appk008graficars
+#import appk001ubicacion
+#import appk002zonaestud
+#import appk003preproces
+#import appk004modelalit
+#import appk005pronoslit 
+#import appk006modlog10k
+#import appk007prolog10k
+#import appk008graficars
 
 # ==========================================================================================================================================
 # CONFIGURACIÓN DE LA PÁGINA (Única declaración global)
