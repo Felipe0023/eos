@@ -172,7 +172,7 @@ with st.sidebar:
     /* Zonas de Carga (Azul Acero Claro con contraste alto) */
     [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stFileUploaderDropzone"] {
         background-color: #1E293B !important; 
-        border: 2px dashed #38BDF8 !important; border-radius: 8px !important;
+        border: 2px solid #38BDF8 !important; border-radius: 8px !important; #dashed
     }
     /* Texto Informativo de Archivos (Blanco Nítido) */
     [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stFileUploaderDropzone"] p {
