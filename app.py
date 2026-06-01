@@ -166,7 +166,7 @@ with st.sidebar:
         border: 1px solid #334155; border-radius: 12px; padding: 20px;
     }
     [data-testid="stSidebar"] [data-testid="stForm"] h3 { color: #FFFFFF !important; }
-    [data-testid="stSidebar"] [data-testid="stForm"] label { color: #E2E8F0 !important; }
+    [data-testid="stSidebar"] [data-testid="stForm"] label { color: #FFFFFF !important; } ##E2E8F0 
 
     /* Zonas de Carga (Azul Acero Claro con contraste alto) */
     [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stFileUploaderDropzone"] {
