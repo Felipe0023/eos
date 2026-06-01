@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import rasterio
 from PIL import Image
-from io import BytesIO
+from io import BytesIO 
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.cluster import DBSCAN
 from xgboost import XGBRegressor, XGBClassifier
