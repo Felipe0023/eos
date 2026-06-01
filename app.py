@@ -155,6 +155,7 @@ with col_logo_2:
 with st.sidebar:
     st.markdown("""
 
+
     <style>
     /* Fondo General Sidebar */
     [data-testid="stSidebar"] { background-color: #F4F6F9 !important; }
@@ -173,9 +174,15 @@ with st.sidebar:
         background-color: #1E293B !important; 
         border: 1px solid #38BDF8 !important; border-radius: 8px !important; 
     }
-    /* Texto Informativo de Archivos (Blanco Nítido) */
-    [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stFileUploaderDropzone"] p {
-        color: #F1F5F9 !important; font-size: 13px !important; 
+    
+    /* 🌟 CORRECCIÓN EXPLICITA: Fuerza a BLANCO el texto "200MB per file • CSV/TIF" 🌟 */
+    [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stFileUploaderDropzone"] p,
+    [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stFileUploaderDropzone"] small,
+    [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stFileUploaderDropzone"] span,
+    [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stFileUploadDropzoneInstructions"] {
+        color: #FFFFFF !important; 
+        font-size: 13px !important; 
+        opacity: 1 !important; /* Evita que Streamlit lo opaque */
     }
 
     /* Botón interno Upload */
@@ -193,6 +200,11 @@ with st.sidebar:
     }
     </style>
 """, unsafe_allow_html=True)
+
+
+
+
+   
 
 
 
