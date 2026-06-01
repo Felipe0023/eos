@@ -163,6 +163,22 @@ with st.sidebar:
         [data-testid="stSidebar"] .stMarkdown, [data-testid="stSidebar"] h3, [data-testid="stSidebar"] label {
             color: #121214 !important;
         }
+
+        /* 🟫 NUEVO: Cambia el fondo del formulario a marrón oscuro y el texto interior a claro */
+        [data-testid="stSidebar"] [data-testid="stForm"] {
+            background-color: #3E2723 !important; /* Marrón oscuro (Material Design Brown 900) */
+            border: 1px solid #5D4037;           /* Borde sutil marrón medio */
+            border-radius: 10px;                 /* Bordes redondeados */
+            padding: 20px;
+        }
+        /* Asegura que los textos, títulos y etiquetas DENTRO del formulario sean legibles (blancos) */
+        [data-testid="stSidebar"] [data-testid="stForm"] .stMarkdown, 
+        [data-testid="stSidebar"] [data-testid="stForm"] h3, 
+        [data-testid="stSidebar"] [data-testid="stForm"] label,
+        [data-testid="stSidebar"] [data-testid="stForm"] p {
+            color: #FFFFFF !important;
+        }
+
         </style>
     """, unsafe_allow_html=True)
     
