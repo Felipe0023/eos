@@ -155,57 +155,73 @@ with col_logo_2:
 with st.sidebar:
     st.markdown("""
         <style>
-        /* Cambia el fondo de la barra lateral */
+        /* Fondo de la barra lateral */
         [data-testid="stSidebar"] {
-            background-color: #FFFFFF !important;
+            background-color: #E6D7C3 !important;
         }
-        /* Cambia los textos a blanco para que contrasten bien con el fondo oscuro */
+        /* Textos generales de la barra lateral a oscuro */
         [data-testid="stSidebar"] .stMarkdown, [data-testid="stSidebar"] h3, [data-testid="stSidebar"] label {
             color: #121214 !important;
         }
-
-        /* 🟫 NUEVO: Cambia el fondo del formulario a marrón oscuro y el texto interior a claro */
+        
+        /* Contenedor del Formulario en Marrón Oscuro */
         [data-testid="stSidebar"] [data-testid="stForm"] {
-            background-color: #3E2723 !important; /* Marrón oscuro (Material Design Brown 900) */
-            border: 1px solid #5D4037;           /* Borde sutil marrón medio */
-            border-radius: 10px;                 /* Bordes redondeados */
+            background-color: #3E2723 !important; 
+            border: 1px solid #5D4037;           
+            border-radius: 10px;                 
             padding: 20px;
         }
-
         
-        /* Títulos y textos principales del formulario en BLANCO para legibilidad */
-        [data-testid="stSidebar"] [data-testid="stForm"] h3, 
-        [data-testid="stSidebar"] [data-testid="stForm"] label,
-        [data-testid="stSidebar"] [data-testid="stForm"] p {
+        /* Título Principal del formulario en BLANCO */
+        [data-testid="stSidebar"] [data-testid="stForm"] h3 {
             color: #FFFFFF !important;
         }
-
-        /* ✨ CAMBIOS PARA COLOR DORADO EN BOTONES Y TEXTOS DE CARGA ✨ */
-
-        /* 1. Texto de los botones "Upload" y detalles del archivo de carga */
-        [data-testid="stSidebar"] [data-testid="stForm"] button [data-testid="stMarkdownContainer"] p,
-        [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stWidgetLabel"] p,
-        [data-testid="stSidebar"] [data-testid="stForm"] .stFileUploader {
-            color: #D4AF37 !important; /* Dorado clásico */
+        
+        /* Subtítulos de instrucciones en el DORADO de la imagen original */
+        [data-testid="stSidebar"] [data-testid="stForm"] label,
+        [data-testid="stSidebar"] [data-testid="stForm"] p {
+            color: #A67C00 !important; /* Dorado oscuro de la imagen original */
         }
 
-        /* 2. Modificación del Botón "Procesar datos" (Fondo y Texto) */
+        /* ✨ ACTUALIZACIÓN: CAMBIO DE ÁREA BLANCA A DORADO OSCURO ✨ */
+
+        /* 1. Fondo del área de carga y borde */
+        [data-testid="stSidebar"] [data-testid="stForm"] .stFileUploader > div:first-child {
+            background-color: #A67C00 !important; /* Dorado oscuro */
+            border-color: #5D4037 !important; /* Borde marrón para contraste */
+            border-radius: 10px;
+        }
+
+        /* 2. Textos de detalles dentro del área dorada (tamaño de archivo, tipo) */
+        [data-testid="stSidebar"] [data-testid="stForm"] .stFileUploader p {
+            color: #FFFFFF !important; /* Blanco para máxima legibilidad sobre dorado */
+        }
+
+        /* 3. Botón "Upload" interno */
+        [data-testid="stSidebar"] [data-testid="stForm"] .stFileUploader button {
+            background-color: #5D4037 !important; /* Marrón para que destaque */
+            color: #A67C00 !important;            /* Texto dorado */
+            border: 1px solid #A67C00 !important; /* Borde dorado */
+        }
+
+        /* 4. Icono de "Upload" */
+        [data-testid="stSidebar"] [data-testid="stForm"] .stFileUploader button svg {
+            fill: #A67C00 !important; /* Icono dorado */
+        }
+
+        /* 5. Modificación del Botón Principal "Procesar datos" (Dorado oscuro completo) */
         [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stBaseButton-secondaryFormSubmit"] {
-            background-color: #D4AF37 !important; /* Fondo Dorado */
-            color: #3E2723 !important;            /* Texto en Marrón Oscuro para contraste */
+            background-color: #A67C00 !important; /* Fondo Dorado Oscuro */
+            color: #FFFFFF !important;            /* Texto en Blanco */
             font-weight: bold !important;
-            border: none !important;
-            transition: background-color 0.3s ease;
+            border: 1px solid #5D4037 !important; /* Borde sutil */
+            transition: all 0.3s ease;
         }
 
         /* Efecto Hover para el botón de Procesar Datos */
         [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stBaseButton-secondaryFormSubmit"]:hover {
-            background-color: #AA7C11 !important; /* Dorado más oscuro al pasar el mouse */
-            color: #FFFFFF !important;            /* Texto cambia a blanco */
+            background-color: #7D5D00 !important; /* Dorado aún más oscuro al pasar el mouse */
         }
-
-
-        
 
         </style>
     """, unsafe_allow_html=True)
