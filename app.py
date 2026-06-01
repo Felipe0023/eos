@@ -155,7 +155,6 @@ with col_logo_2:
 with st.sidebar:
     st.markdown("""
 
-
     <style>
     /* Fondo General Sidebar */
     [data-testid="stSidebar"] { background-color: #F4F6F9 !important; }
@@ -176,7 +175,7 @@ with st.sidebar:
     }
     /* Texto Informativo de Archivos (Blanco Nítido) */
     [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stFileUploaderDropzone"] p {
-        color: #F1F5F9 !important; font-size: 13px !important;
+        color: #FFFFFF !important; font-size: 13px !important; ##FFFFFF #F1F5F9
     }
 
     /* Botón interno Upload */
@@ -221,7 +220,6 @@ with st.sidebar:
         st.write("### Panel de datos de entrada")
         archivo_csv = st.file_uploader("Arrastra y suelta o click para subir archivos CSV", type=["csv"])
         archivo_tif = st.file_uploader("Arrastra y suelta o click para subir archivos TIF", type=["tif", "tiff"])
-        #st.markdown("---")
         boton_procesar = st.form_submit_button("Procesar datos")
 
 # ==========================================================================================================================================
