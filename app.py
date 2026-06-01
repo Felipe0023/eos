@@ -153,8 +153,14 @@ with col_logo_2:
 # 1. BARRA LATERAL (SIDEBAR) - DISPONIBLE SÓLO SI LA APP YA FUE INICIADA
 # ==========================================================================================================================================
 with st.sidebar:
+    # Bloque de estilos CSS para el diseño general y forzado de márgenes superiores
     st.markdown("""
     <style>
+    /* 🔝 Fuerza a eliminar el espacio vacío nativo superior del sidebar */
+    [data-testid="stSidebarUserContent"] {
+        padding-top: 0rem !important;
+    }
+    
     /* Fondo General Sidebar */
     [data-testid="stSidebar"] { background-color: #F4F6F9 !important; }
     [data-testid="stSidebar"] .stMarkdown, [data-testid="stSidebar"] h3 { color: #1E293B !important; }
@@ -173,14 +179,14 @@ with st.sidebar:
         border: 1px solid #38BDF8 !important; border-radius: 8px !important; 
     }
     
-    /* 🌟 CORRECCIÓN EXPLICITA: Fuerza a BLANCO el texto "200MB per file • CSV/TIF" 🌟 */
+    /* Fuerza a BLANCO el texto "200MB per file • CSV/TIF" */
     [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stFileUploaderDropzone"] p,
     [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stFileUploaderDropzone"] small,
     [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stFileUploaderDropzone"] span,
     [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stFileUploadDropzoneInstructions"] {
         color: #FFFFFF !important; 
         font-size: 13px !important; 
-        opacity: 1 !important; /* Evita que Streamlit lo opaque */
+        opacity: 1 !important;
     }
 
     /* Botón interno Upload */
@@ -198,10 +204,6 @@ with st.sidebar:
     }
     </style>
 """, unsafe_allow_html=True)
-
-
-
-
    
 
 
