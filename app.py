@@ -154,8 +154,6 @@ with col_logo_2:
 # ==========================================================================================================================================
 with st.sidebar:
     st.markdown("""
-
-
     <style>
     /* Fondo General Sidebar */
     [data-testid="stSidebar"] { background-color: #F4F6F9 !important; }
