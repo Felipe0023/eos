@@ -154,40 +154,41 @@ with col_logo_2:
 # ==========================================================================================================================================
 with st.sidebar:
     st.markdown("""
+
     <style>
     /* Fondo General Sidebar */
-    [data-testid="stSidebar"] { background-color: #F5F2EB !important; }
+    [data-testid="stSidebar"] { background-color: #E2E8F0 !important; }
     
-    /* Contenedor Formulario (Verde Oliva Muy Oscuro) */
+    /* Contenedor Formulario (Grafito / Negro Carbón) */
     [data-testid="stSidebar"] [data-testid="stForm"] {
-        background-color: #1C2826 !important; 
-        border: 1px solid #2D3A37; border-radius: 10px; padding: 20px;
+        background-color: #1E1E1E !important; 
+        border: 1px solid #333333; border-radius: 14px; padding: 20px;
     }
     [data-testid="stSidebar"] [data-testid="stForm"] h3 { color: #FFFFFF !important; }
-    [data-testid="stSidebar"] [data-testid="stForm"] label { color: #D2C4A7 !important; }
+    [data-testid="stSidebar"] [data-testid="stForm"] label { color: #94A3B8 !important; }
 
-    /* Zonas de Carga (Color Arena Claro) */
+    /* Zonas de Carga (Gris Carbón Medio) */
     [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stFileUploaderDropzone"] {
-        background-color: #E8E1D5 !important; 
-        border: 2px dashed #9A7B56 !important; border-radius: 8px !important;
+        background-color: #2D2D2D !important; 
+        border: 2px dashed #64748B !important; border-radius: 10px !important;
     }
-    /* Texto Informativo de Archivos (Marrón Oscuro para Contraste) */
+    /* Texto Informativo de Archivos (Gris Claro Altamente Legible) */
     [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stFileUploaderDropzone"] p {
-        color: #3E2723 !important; font-weight: 500 !important;
+        color: #CBD5E1 !important;
     }
 
     /* Botón interno Upload */
     [data-testid="stSidebar"] [data-testid="stForm"] .stFileUploader button {
-        background-color: #1C2826 !important; color: #9A7B56 !important; border: 1px solid #9A7B56 !important;
+        background-color: #1E1E1E !important; color: #FFFFFF !important; border: 1px solid #64748B !important;
     }
-    [data-testid="stSidebar"] [data-testid="stForm"] .stFileUploader button svg { fill: #9A7B56 !important; }
+    [data-testid="stSidebar"] [data-testid="stForm"] .stFileUploader button svg { fill: #FFFFFF !important; }
 
-    /* Botón Principal Procesar Datos (Bronce / Dorado Envejecido) */
+    /* Botón Principal Procesar Datos (Gris Claro / Plata) */
     [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stBaseButton-secondaryFormSubmit"] {
-        background-color: #9A7B56 !important; color: #FFFFFF !important; font-weight: bold !important; border: none !important;
+        background-color: #F1F5F9 !important; color: #0F172A !important; font-weight: bold !important; border: none !important;
     }
     [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stBaseButton-secondaryFormSubmit"]:hover {
-        background-color: #7A5E3B !important;
+        background-color: #CBD5E1 !important;
     }
     </style>
 """, unsafe_allow_html=True)
