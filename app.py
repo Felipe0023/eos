@@ -154,7 +154,6 @@ with col_logo_2:
 # ==========================================================================================================================================
 with st.sidebar:
     st.markdown("""
-
         <style>
         /* Fondo de la barra lateral */
         [data-testid="stSidebar"] {
@@ -242,7 +241,7 @@ with st.sidebar:
         st.rerun()
         
     with st.form("formulario_carga"):
-        st.write("### Panel de Datos de Entrada")
+        st.write("### Panel de datos de entrada")
         archivo_csv = st.file_uploader("Arrastra y suelta o click para subir archivos CSV", type=["csv"])
         archivo_tif = st.file_uploader("Arrastra y suelta o click para subir archivos TIF", type=["tif", "tiff"])
         #st.markdown("---")
