@@ -37,8 +37,6 @@ mapbox_key = st.secrets.get("MAPBOX_TOKEN", "")
 # ==========================================================================================================================================
 # MECANISMO DE CACHÉ Y RUTAS: OPTIMIZACIÓN DE IMÁGENES Y LOGOS EN RAM
 # ==========================================================================================================================================
-import os
-
 # Detectamos la ruta absoluta del directorio actual en el servidor
 ruta_base = os.path.dirname(__file__) if "__file__" in locals() else os.getcwd()
 
@@ -131,14 +129,30 @@ if not st.session_state["app_iniciada"]:
     html_logo_boton = obtener_logo_html_central(ruta_logo_nereus)
     st.markdown(html_logo_boton, unsafe_allow_html=True)
    
-    st.stop()
+    st.stop()  # <--- AQUÍ SE DETIENE LA BIENVENIDA. NADIE PASA DE AQUÍ SIN DAR CLICK.
+
+
+# ==========================================================================================================================================
+# 🌟 TOPE ABSOLUTO DEL CUERPO (SE EJECUTA ÚNICAMENTE DESPUÉS DE LA BIENVENIDA)
+# ==========================================================================================================================================
+st.markdown("<br>", unsafe_allow_html=True)
+col_logo_1, col_logo_2, col_logo_3 = st.columns([1, .5, 1])
+with col_logo_2:
+    if logo_nuevo_cache is not None:
+        st.image(logo_nuevo_cache, use_container_width=True)
+    else:
+        st.markdown(
+            "<div style='text-align:center; padding:15px; background:#f0f2f6; border-radius:10px; color:#333; font-weight:bold; margin-bottom:15px;'> "
+            "✨ [ LOGO LICENCIADO ] ✨"
+            "</div>", 
+            unsafe_allow_html=True
+        )
 
 
 # ==========================================================================================================================================
 # 1. BARRA LATERAL (SIDEBAR) - DISPONIBLE SÓLO SI LA APP YA FUE INICIADA
 # ==========================================================================================================================================
 with st.sidebar:
-    # 🌟 CORREGIDO: Muestra logo_nereus2.png de forma segura usando su ruta absoluta en RAM
     st.markdown("""
         <style>
         /* Cambia el fondo de la barra lateral */
@@ -153,7 +167,7 @@ with st.sidebar:
     """, unsafe_allow_html=True)
     
     if logo_nereus2_cache is not None:
-        st.image(logo_nereus2_cache, width=180)  # Puedes cambiar width=180 por use_container_width=True si quieres que use todo el ancho
+        st.image(logo_nereus2_cache, width=180)  
         st.markdown("---")
     else:
         st.warning("⚠️ Logo 'logo_nereus2.png' no disponible en el servidor.")
@@ -161,15 +175,11 @@ with st.sidebar:
         
     st.write("### Panel de Datos de Entrada")
     
-    # Botón opcional para regresar a la pantalla de bienvenida si se requiere
     if st.button("⬅️ Cerrar Sesión / Inicio", use_container_width=True):
         st.session_state["app_iniciada"] = False
         st.session_state["procesar_click"] = False
         st.rerun()
         
-    #st.markdown("---")
-    
-    # Formulario de parámetros y archivos
     with st.form("formulario_carga"):
         archivo_csv = st.file_uploader("Arrastra y suelta o click para subir archivos CSV", type=["csv"])
         archivo_tif = st.file_uploader("Arrastra y suelta o click para subir archivos TIF", type=["tif", "tiff"])
@@ -209,22 +219,8 @@ K001_datos = st.session_state["K001_datos"]
 
 
 # ==========================================================================================================================================
-# 3. CUERPO CENTRAL DE LA PÁGINA (ESTADO ACTIVO)
+# 3. CONTENIDO CENTRAL DE LA PÁGINA (ESTADO ACTIVO - ABAJO DEL LOGO LICENCIADO)
 # ==========================================================================================================================================
-# LOGO LICENCIADO EN EL TOPE Y CENTRO DEL CUERPO PRINCIPAL
-st.markdown("<br>", unsafe_allow_html=True)
-col_logo_1, col_logo_2, col_logo_3 = st.columns([1, .5, 1])
-with col_logo_2:
-    if logo_nuevo_cache is not None:
-        st.image(logo_nuevo_cache, use_container_width=True)
-    else:
-        st.markdown(
-            "<div style='text-align:center; padding:15px; background:#f0f2f6; border-radius:10px; color:#333; font-weight:bold; margin-bottom:15px;'> "
-            "✨ [ LOGO LICENCIADO ] ✨"
-            "</div>", 
-            unsafe_allow_html=True
-        )
-
 # Control de flujo de datos por debajo de la cabecera unificada
 if not ambos_archivos_listos:
     st.markdown("<h4 style='text-align: center; color: #555;'>💡 Por favor, en la barra lateral izquierda cargar los archivos CSV y TIF y presionar 'PROCESAR DATOS'.</h4>", unsafe_allow_html=True)
@@ -271,7 +267,5 @@ else:
         with tabs[7]: # Gráfico 3D    
             appk008graficars.BLOQUE001()
             appk008graficars.BLOQUE002()
-
-
 
 
