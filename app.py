@@ -215,7 +215,7 @@ with st.sidebar:
 
     
     if logo_nereus2_cache is not None:
-        st.image(logo_nereus2_cache, width=180)  
+        st.image(logo_nereus2_cache, width=180)   
         #st.markdown("---")
     else:
         st.warning("⚠️ Logo 'logo_nereus2.png' no disponible en el servidor.")
