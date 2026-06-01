@@ -157,41 +157,46 @@ with st.sidebar:
 
     <style>
     /* Fondo General Sidebar */
-    [data-testid="stSidebar"] { background-color: #E2E8F0 !important; }
+    [data-testid="stSidebar"] { background-color: #F4F6F9 !important; }
+    [data-testid="stSidebar"] .stMarkdown, [data-testid="stSidebar"] h3 { color: #1E293B !important; }
     
-    /* Contenedor Formulario (Grafito / Negro Carbón) */
+    /* Contenedor Formulario (Azul Marino Oscuro) */
     [data-testid="stSidebar"] [data-testid="stForm"] {
-        background-color: #1E1E1E !important; 
-        border: 1px solid #333333; border-radius: 14px; padding: 20px;
+        background-color: #0F172A !important; 
+        border: 1px solid #334155; border-radius: 12px; padding: 20px;
     }
     [data-testid="stSidebar"] [data-testid="stForm"] h3 { color: #FFFFFF !important; }
-    [data-testid="stSidebar"] [data-testid="stForm"] label { color: #94A3B8 !important; }
+    [data-testid="stSidebar"] [data-testid="stForm"] label { color: #E2E8F0 !important; }
 
-    /* Zonas de Carga (Gris Carbón Medio) */
+    /* Zonas de Carga (Azul Acero Claro con contraste alto) */
     [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stFileUploaderDropzone"] {
-        background-color: #2D2D2D !important; 
-        border: 2px dashed #64748B !important; border-radius: 10px !important;
+        background-color: #1E293B !important; 
+        border: 2px dashed #38BDF8 !important; border-radius: 8px !important;
     }
-    /* Texto Informativo de Archivos (Gris Claro Altamente Legible) */
+    /* Texto Informativo de Archivos (Blanco Nítido) */
     [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stFileUploaderDropzone"] p {
-        color: #CBD5E1 !important;
+        color: #F1F5F9 !important; font-size: 13px !important;
     }
 
     /* Botón interno Upload */
     [data-testid="stSidebar"] [data-testid="stForm"] .stFileUploader button {
-        background-color: #1E1E1E !important; color: #FFFFFF !important; border: 1px solid #64748B !important;
+        background-color: #0F172A !important; color: #38BDF8 !important; border: 1px solid #38BDF8 !important;
     }
-    [data-testid="stSidebar"] [data-testid="stForm"] .stFileUploader button svg { fill: #FFFFFF !important; }
+    [data-testid="stSidebar"] [data-testid="stForm"] .stFileUploader button svg { fill: #38BDF8 !important; }
 
-    /* Botón Principal Procesar Datos (Gris Claro / Plata) */
+    /* Botón Principal Procesar Datos (Celeste Tecnológico) */
     [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stBaseButton-secondaryFormSubmit"] {
-        background-color: #F1F5F9 !important; color: #0F172A !important; font-weight: bold !important; border: none !important;
+        background-color: #0EA5E9 !important; color: #FFFFFF !important; font-weight: bold !important; border: none !important;
     }
     [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stBaseButton-secondaryFormSubmit"]:hover {
-        background-color: #CBD5E1 !important;
+        background-color: #0284C7 !important;
     }
     </style>
 """, unsafe_allow_html=True)
+
+
+
+
 
 
     
