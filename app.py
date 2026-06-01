@@ -155,6 +155,7 @@ with col_logo_2:
 with st.sidebar:
     st.markdown("""
 
+
     <style>
     /* Fondo General Sidebar */
     [data-testid="stSidebar"] { background-color: #F4F6F9 !important; }
@@ -166,12 +167,12 @@ with st.sidebar:
         border: 1px solid #334155; border-radius: 12px; padding: 20px;
     }
     [data-testid="stSidebar"] [data-testid="stForm"] h3 { color: #FFFFFF !important; }
-    [data-testid="stSidebar"] [data-testid="stForm"] label { color: #E2E8F0  !important; } ##E2E8F0 
+    [data-testid="stSidebar"] [data-testid="stForm"] label { color: #E2E8F0 !important; }
 
     /* Zonas de Carga (Azul Acero Claro con contraste alto) */
     [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stFileUploaderDropzone"] {
-        background-color: #0EA5E9 !important;  #1E293B
-        border: 2px dashed #38BDF8 !important; border-radius: 8px !important; #solid
+        background-color: #1E293B !important; 
+        border: 2px dashed #38BDF8 !important; border-radius: 8px !important;
     }
     /* Texto Informativo de Archivos (Blanco Nítido) */
     [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stFileUploaderDropzone"] p {
@@ -193,6 +194,8 @@ with st.sidebar:
     }
     </style>
 """, unsafe_allow_html=True)
+
+
 
 
 
