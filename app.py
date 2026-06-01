@@ -171,7 +171,7 @@ with st.sidebar:
     
     # Formulario de parámetros y archivos
     with st.form("formulario_carga"):
-        archivo_csv = st.file_uploader("Arrastrar o Cargar archivo CSV", type=["csv"])
+        archivo_csv = st.file_uploader("Arrastra y suelta o haz click para subir archivos", type=["csv"])
         archivo_tif = st.file_uploader("Arrastrar o Cargar archivo TIF", type=["tif", "tiff"])
         st.markdown("---")
         boton_procesar = st.form_submit_button("Procesar datos")
