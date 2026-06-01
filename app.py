@@ -213,7 +213,7 @@ K001_datos = st.session_state["K001_datos"]
 # ==========================================================================================================================================
 # LOGO LICENCIADO EN EL TOPE Y CENTRO DEL CUERPO PRINCIPAL
 st.markdown("<br>", unsafe_allow_html=True)
-col_logo_1, col_logo_2, col_logo_3 = st.columns([1, 1, 1])
+col_logo_1, col_logo_2, col_logo_3 = st.columns([1, .7, 1])
 with col_logo_2:
     if logo_nuevo_cache is not None:
         st.image(logo_nuevo_cache, use_container_width=True)
