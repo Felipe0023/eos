@@ -184,7 +184,7 @@ with st.sidebar:
         st.write("### Panel de Datos de Entrada")
         archivo_csv = st.file_uploader("Arrastra y suelta o click para subir archivos CSV", type=["csv"])
         archivo_tif = st.file_uploader("Arrastra y suelta o click para subir archivos TIF", type=["tif", "tiff"])
-        st.markdown("---")
+        #st.markdown("---")
         boton_procesar = st.form_submit_button("Procesar datos")
 
 # ==========================================================================================================================================
