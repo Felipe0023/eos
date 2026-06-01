@@ -175,7 +175,7 @@ with st.sidebar:
     }
     /* Texto Informativo de Archivos (Blanco Nítido) */
     [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stFileUploaderDropzone"] p {
-        color: #F1F5F9 !important; font-size: 13px !important;
+        color: #FFFFFF !important; font-size: 13px !important;
     }
 
     /* Botón interno Upload */
