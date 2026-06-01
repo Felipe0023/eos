@@ -173,7 +173,7 @@ with st.sidebar:
         st.warning("⚠️ Logo 'logo_nereus2.png' no disponible en el servidor.")
         st.markdown("---")
         
-    st.write("### Panel de Datos de Entrada")
+    #st.write("### Panel de Datos de Entrada")
     
     if st.button("⬅️ Cerrar Sesión / Inicio", use_container_width=True):
         st.session_state["app_iniciada"] = False
@@ -181,6 +181,7 @@ with st.sidebar:
         st.rerun()
         
     with st.form("formulario_carga"):
+        st.write("### Panel de Datos de Entrada")
         archivo_csv = st.file_uploader("Arrastra y suelta o click para subir archivos CSV", type=["csv"])
         archivo_tif = st.file_uploader("Arrastra y suelta o click para subir archivos TIF", type=["tif", "tiff"])
         st.markdown("---")
