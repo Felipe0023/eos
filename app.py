@@ -158,7 +158,7 @@ with st.sidebar:
         <style>
         /* Fondo de la barra lateral */
         [data-testid="stSidebar"] {
-            background-color: #E6D7C3 !important;
+            background-color: #FFFFFF !important;
         }
         /* Textos generales de la barra lateral a oscuro */
         [data-testid="stSidebar"] .stMarkdown, [data-testid="stSidebar"] h3, [data-testid="stSidebar"] label {
