@@ -205,24 +205,19 @@ with st.sidebar:
     </style>
 """, unsafe_allow_html=True)
    
-
-
-
-
-
-
-
-
-    
+    # 🌟 CENTRADO Y POSICIONAMIENTO AL TOPE DEL LOGO NEREUS2 🌟
     if logo_nereus2_cache is not None:
-        st.image(logo_nereus2_cache, width=180)   
-        #st.markdown("---")
+        # Estructura de 3 columnas para centrar la imagen perfectamente
+        col_side_1, col_side_2, col_side_3 = st.columns([1, 4, 1])
+        with col_side_2:
+            st.image(logo_nereus2_cache, width=180)
+        st.markdown("<br>", unsafe_allow_html=True) # Espacio sutil antes de los botones
     else:
         st.warning("⚠️ Logo 'logo_nereus2.png' no disponible en el servidor.")
         st.markdown("---")
-        
-    #st.write("### Panel de Datos de Entrada")
-    
+
+
+            
     if st.button("⬅️ Cerrar Sesión / Inicio", use_container_width=True):
         st.session_state["app_iniciada"] = False
         st.session_state["procesar_click"] = False
