@@ -154,6 +154,7 @@ with col_logo_2:
 # ==========================================================================================================================================
 with st.sidebar:
     st.markdown("""
+
         <style>
         /* Fondo de la barra lateral */
         [data-testid="stSidebar"] {
@@ -180,47 +181,47 @@ with st.sidebar:
         /* Subtítulos de instrucciones en el DORADO de la imagen original */
         [data-testid="stSidebar"] [data-testid="stForm"] label,
         [data-testid="stSidebar"] [data-testid="stForm"] p {
-            color: #A67C00 !important; /* Dorado oscuro de la imagen original */
+            color: #A67C00 !important; 
         }
 
-        /* ✨ ACTUALIZACIÓN: CAMBIO DE ÁREA BLANCA A DORADO OSCURO ✨ */
+        /* 🔵 ACTUALIZACIÓN: CAMBIO DEL ÁREA BLANCA A AZUL PROFUNDO 🔵 */
 
-        /* 1. Fondo del área de carga y borde */
-        [data-testid="stSidebar"] [data-testid="stForm"] .stFileUploader > div:first-child {
-            background-color: #A67C00 !important; /* Dorado oscuro */
-            border-color: #5D4037 !important; /* Borde marrón para contraste */
-            border-radius: 10px;
+        /* 1. Fondo de la caja grande que antes era blanca */
+        [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stFileUploaderDropzone"] {
+            background-color: #1E3A8A !important; /* Azul Profundo (puedes cambiarlo por #0D47A1 si prefieres otro tono) */
+            border: 2px dashed #D4AF37 !important; /* Línea discontinua dorada para que resalte */
+            border-radius: 10px !important;
         }
 
-        /* 2. Textos de detalles dentro del área dorada (tamaño de archivo, tipo) */
-        [data-testid="stSidebar"] [data-testid="stForm"] .stFileUploader p {
-            color: #FFFFFF !important; /* Blanco para máxima legibilidad sobre dorado */
+        /* 2. Texto secundario dentro de la caja azul ("200MB per file") en blanco para que se lea bien */
+        [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stFileUploaderDropzone"] p {
+            color: #FFFFFF !important; 
         }
 
-        /* 3. Botón "Upload" interno */
+        /* 3. Mantener el botón interno "Upload" en color Marrón como en tu imagen */
         [data-testid="stSidebar"] [data-testid="stForm"] .stFileUploader button {
-            background-color: #5D4037 !important; /* Marrón para que destaque */
-            color: #A67C00 !important;            /* Texto dorado */
-            border: 1px solid #A67C00 !important; /* Borde dorado */
+            background-color: #5D4037 !important; 
+            color: #A67C00 !important;            
+            border: 1px solid #A67C00 !important; 
         }
 
-        /* 4. Icono de "Upload" */
+        /* 4. Color del Icono de la flecha de subida dentro del botón "Upload" */
         [data-testid="stSidebar"] [data-testid="stForm"] .stFileUploader button svg {
-            fill: #A67C00 !important; /* Icono dorado */
+            fill: #A67C00 !important; 
         }
 
-        /* 5. Modificación del Botón Principal "Procesar datos" (Dorado oscuro completo) */
+        /* 5. Configuración para el Botón Principal "Procesar datos" en dorado */
         [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stBaseButton-secondaryFormSubmit"] {
-            background-color: #A67C00 !important; /* Fondo Dorado Oscuro */
-            color: #FFFFFF !important;            /* Texto en Blanco */
+            background-color: #A67C00 !important; 
+            color: #FFFFFF !important;            
             font-weight: bold !important;
-            border: 1px solid #5D4037 !important; /* Borde sutil */
+            border: 1px solid #5D4037 !important; 
             transition: all 0.3s ease;
         }
 
         /* Efecto Hover para el botón de Procesar Datos */
         [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stBaseButton-secondaryFormSubmit"]:hover {
-            background-color: #7D5D00 !important; /* Dorado aún más oscuro al pasar el mouse */
+            background-color: #7D5D00 !important; 
         }
 
         </style>
