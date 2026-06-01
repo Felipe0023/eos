@@ -171,13 +171,41 @@ with st.sidebar:
             border-radius: 10px;                 /* Bordes redondeados */
             padding: 20px;
         }
-        /* Asegura que los textos, títulos y etiquetas DENTRO del formulario sean legibles (blancos) */
-        [data-testid="stSidebar"] [data-testid="stForm"] .stMarkdown, 
+
+        
+        /* Títulos y textos principales del formulario en BLANCO para legibilidad */
         [data-testid="stSidebar"] [data-testid="stForm"] h3, 
         [data-testid="stSidebar"] [data-testid="stForm"] label,
         [data-testid="stSidebar"] [data-testid="stForm"] p {
             color: #FFFFFF !important;
         }
+
+        /* ✨ CAMBIOS PARA COLOR DORADO EN BOTONES Y TEXTOS DE CARGA ✨ */
+
+        /* 1. Texto de los botones "Upload" y detalles del archivo de carga */
+        [data-testid="stSidebar"] [data-testid="stForm"] button [data-testid="stMarkdownContainer"] p,
+        [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stWidgetLabel"] p,
+        [data-testid="stSidebar"] [data-testid="stForm"] .stFileUploader {
+            color: #D4AF37 !important; /* Dorado clásico */
+        }
+
+        /* 2. Modificación del Botón "Procesar datos" (Fondo y Texto) */
+        [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stBaseButton-secondaryFormSubmit"] {
+            background-color: #D4AF37 !important; /* Fondo Dorado */
+            color: #3E2723 !important;            /* Texto en Marrón Oscuro para contraste */
+            font-weight: bold !important;
+            border: none !important;
+            transition: background-color 0.3s ease;
+        }
+
+        /* Efecto Hover para el botón de Procesar Datos */
+        [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stBaseButton-secondaryFormSubmit"]:hover {
+            background-color: #AA7C11 !important; /* Dorado más oscuro al pasar el mouse */
+            color: #FFFFFF !important;            /* Texto cambia a blanco */
+        }
+
+
+        
 
         </style>
     """, unsafe_allow_html=True)
