@@ -171,11 +171,11 @@ with st.sidebar:
     /* Zonas de Carga (Azul Acero Claro con contraste alto) */
     [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stFileUploaderDropzone"] {
         background-color: #1E293B !important; 
-        border: 2px dashed #38BDF8 !important; border-radius: 8px !important; #dashed
+        border: 2px dashed #38BDF8 !important; border-radius: 8px !important; 
     }
     /* Texto Informativo de Archivos (Blanco Nítido) */
     [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stFileUploaderDropzone"] p {
-        color: #FFFFFF !important; font-size: 13px !important; ##FFFFFF #F1F5F9
+        color: #FFFFFF !important; font-size: 13px !important; #F1F5F9
     }
 
     /* Botón interno Upload */
