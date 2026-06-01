@@ -154,77 +154,45 @@ with col_logo_2:
 # ==========================================================================================================================================
 with st.sidebar:
     st.markdown("""
-        <style>
-        /* Fondo de la barra lateral */
-        [data-testid="stSidebar"] {
-            background-color: #FFFFFF !important;
-        }
-        /* Textos generales de la barra lateral a oscuro */
-        [data-testid="stSidebar"] .stMarkdown, [data-testid="stSidebar"] h3, [data-testid="stSidebar"] label {
-            color: #121214 !important;
-        }
-        
-        /* Contenedor del Formulario en Marrón Oscuro */
-        [data-testid="stSidebar"] [data-testid="stForm"] {
-            background-color: #3E2723 !important; 
-            border: 1px solid #5D4037;           
-            border-radius: 10px;                 
-            padding: 20px;
-        }
-        
-        /* Título Principal del formulario en BLANCO */
-        [data-testid="stSidebar"] [data-testid="stForm"] h3 {
-            color: #FFFFFF !important;
-        }
-        
-        /* Subtítulos de instrucciones en el DORADO de la imagen original */
-        [data-testid="stSidebar"] [data-testid="stForm"] label,
-        [data-testid="stSidebar"] [data-testid="stForm"] p {
-            color: #A67C00 !important; 
-        }
+    <style>
+    /* Fondo General Sidebar */
+    [data-testid="stSidebar"] { background-color: #F5F2EB !important; }
+    
+    /* Contenedor Formulario (Verde Oliva Muy Oscuro) */
+    [data-testid="stSidebar"] [data-testid="stForm"] {
+        background-color: #1C2826 !important; 
+        border: 1px solid #2D3A37; border-radius: 10px; padding: 20px;
+    }
+    [data-testid="stSidebar"] [data-testid="stForm"] h3 { color: #FFFFFF !important; }
+    [data-testid="stSidebar"] [data-testid="stForm"] label { color: #D2C4A7 !important; }
 
-        /* 🔵 ACTUALIZACIÓN: CAMBIO DEL ÁREA BLANCA A AZUL PROFUNDO 🔵 */
+    /* Zonas de Carga (Color Arena Claro) */
+    [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stFileUploaderDropzone"] {
+        background-color: #E8E1D5 !important; 
+        border: 2px dashed #9A7B56 !important; border-radius: 8px !important;
+    }
+    /* Texto Informativo de Archivos (Marrón Oscuro para Contraste) */
+    [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stFileUploaderDropzone"] p {
+        color: #3E2723 !important; font-weight: 500 !important;
+    }
 
-        /* 1. Fondo de la caja grande que antes era blanca */
-        [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stFileUploaderDropzone"] {
-            background-color: #1E3A8A !important; /* Azul Profundo (puedes cambiarlo por #0D47A1 si prefieres otro tono) */
-            border: 2px dashed #D4AF37 !important; /* Línea discontinua dorada para que resalte */
-            border-radius: 10px !important;
-        }
+    /* Botón interno Upload */
+    [data-testid="stSidebar"] [data-testid="stForm"] .stFileUploader button {
+        background-color: #1C2826 !important; color: #9A7B56 !important; border: 1px solid #9A7B56 !important;
+    }
+    [data-testid="stSidebar"] [data-testid="stForm"] .stFileUploader button svg { fill: #9A7B56 !important; }
 
-        /* 2. Texto secundario dentro de la caja azul ("200MB per file") en blanco para que se lea bien */
-        [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stFileUploaderDropzone"] p {
-            color: #FFFFFF !important; 
-        }
+    /* Botón Principal Procesar Datos (Bronce / Dorado Envejecido) */
+    [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stBaseButton-secondaryFormSubmit"] {
+        background-color: #9A7B56 !important; color: #FFFFFF !important; font-weight: bold !important; border: none !important;
+    }
+    [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stBaseButton-secondaryFormSubmit"]:hover {
+        background-color: #7A5E3B !important;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
-        /* 3. Mantener el botón interno "Upload" en color Marrón como en tu imagen */
-        [data-testid="stSidebar"] [data-testid="stForm"] .stFileUploader button {
-            background-color: #5D4037 !important; 
-            color: #A67C00 !important;            
-            border: 1px solid #A67C00 !important; 
-        }
 
-        /* 4. Color del Icono de la flecha de subida dentro del botón "Upload" */
-        [data-testid="stSidebar"] [data-testid="stForm"] .stFileUploader button svg {
-            fill: #A67C00 !important; 
-        }
-
-        /* 5. Configuración para el Botón Principal "Procesar datos" en dorado */
-        [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stBaseButton-secondaryFormSubmit"] {
-            background-color: #A67C00 !important; 
-            color: #FFFFFF !important;            
-            font-weight: bold !important;
-            border: 1px solid #5D4037 !important; 
-            transition: all 0.3s ease;
-        }
-
-        /* Efecto Hover para el botón de Procesar Datos */
-        [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stBaseButton-secondaryFormSubmit"]:hover {
-            background-color: #7D5D00 !important; 
-        }
-
-        </style>
-    """, unsafe_allow_html=True)
     
     if logo_nereus2_cache is not None:
         st.image(logo_nereus2_cache, width=180)  
