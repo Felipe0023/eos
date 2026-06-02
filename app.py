@@ -18,7 +18,7 @@ import os
 import sys
 import base64
 
-#import appk001ubicacion
+import appk001ubicacion
 #import appk002zonaestud
 #import appk003preproces
 #import appk004modelalit
