@@ -193,7 +193,7 @@ with st.sidebar:
     with st.form("formulario_carga"):
         # 1️⃣ SUPERIOR: Logo Licenciado
         if logo_nuevo_cache is not None:
-            col_lic_1, col_lic_2, col_lic_3 = st.columns([1, 4, 1])
+            col_lic_1, col_lic_2, col_lic_3 = st.columns([1, 5, 1])
             with col_lic_2:
                 st.image(logo_nuevo_cache, use_container_width=True)
         else:
