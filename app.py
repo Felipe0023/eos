@@ -37,7 +37,6 @@ mapbox_key = st.secrets.get("MAPBOX_TOKEN", "")
 # ==========================================================================================================================================
 # MECANISMO DE CACHÉ Y RUTAS: OPTIMIZACIÓN DE IMÁGENES Y LOGOS EN RAM
 # ==========================================================================================================================================
-# Detectamos la ruta absoluta del directorio actual en el servidor
 ruta_base = os.path.dirname(__file__) if "__file__" in locals() else os.getcwd()
 
 @st.cache_data(show_spinner=False)
@@ -81,17 +80,10 @@ def cargar_logo_fijo(ruta_archivo):
         return None
 
 # --- CARGA INTELIGENTE DE LOGOS EN MEMORIA ---
-
-# 1. Logo Central de Bienvenida (Usa la ruta absoluta calculada)
 ruta_logo_nereus = os.path.join(ruta_base, "logo_nereus.png")
-
-# 2. Logo Licenciado del cuerpo principal (Mantenemos PIL)
 logo_nuevo_cache = cargar_logo_fijo(os.path.join(ruta_base, "logo_licenciado.png")) or cargar_logo_fijo(os.path.join(ruta_base, "logo_nuevo.jpg"))
-
-# 3. 🌟 LOGO LATERAL CORREGIDO: Carga directa por ruta del sistema para máxima compatibilidad
 ruta_logo_sidebar = os.path.join(ruta_base, "logo_nereus2.png")
 logo_nereus2_cache = ruta_logo_sidebar if os.path.exists(ruta_logo_sidebar) else None
-
 
 # ==========================================================================================================================================
 # GESTIÓN DE MEMORIA RAM (Session State)
@@ -128,12 +120,10 @@ if not st.session_state["app_iniciada"]:
 
     html_logo_boton = obtener_logo_html_central(ruta_logo_nereus)
     st.markdown(html_logo_boton, unsafe_allow_html=True)
-   
-    st.stop()  # <--- AQUÍ SE DETIENE LA BIENVENIDA. NADIE PASA DE AQUÍ SIN DAR CLICK.
-
+    st.stop()  
 
 # ==========================================================================================================================================
-# 🌟 TOPE ABSOLUTO DEL CUERPO (SE EJECUTA ÚNICAMENTE DESPUÉS DE LA BIENVENIDA)
+# TOPE ABSOLUTO DEL CUERPO (SE EJECUTA ÚNICAMENTE DESPUÉS DE LA BIENVENIDA)
 # ==========================================================================================================================================
 st.markdown("<br>", unsafe_allow_html=True)
 col_logo_1, col_logo_2, col_logo_3 = st.columns([1, .5, 1])
@@ -148,24 +138,18 @@ with col_logo_2:
             unsafe_allow_html=True
         )
 
-
 # ==========================================================================================================================================
 # 1. BARRA LATERAL (SIDEBAR) - DISPONIBLE SÓLO SI LA APP YA FUE INICIADA
 # ==========================================================================================================================================
 with st.sidebar:
-    # Bloque de estilos CSS para el diseño general y forzado de márgenes superiores
     st.markdown("""
     <style>
-    /* 🔝 Fuerza a eliminar el espacio vacío nativo superior del sidebar */
     [data-testid="stSidebarUserContent"] {
         padding-top: 0rem !important;
     }
-    
-    /* Fondo General Sidebar */
     [data-testid="stSidebar"] { background-color: #F4F6F9 !important; }
     [data-testid="stSidebar"] .stMarkdown, [data-testid="stSidebar"] h3 { color: #1E293B !important; }
     
-    /* Contenedor Formulario (Azul Marino Oscuro) */
     [data-testid="stSidebar"] [data-testid="stForm"] {
         background-color: #0F172A !important; 
         border: 1px solid #334155; border-radius: 12px; padding: 20px;
@@ -173,29 +157,25 @@ with st.sidebar:
     [data-testid="stSidebar"] [data-testid="stForm"] h3 { color: #FFFFFF !important; }
     [data-testid="stSidebar"] [data-testid="stForm"] label { color: #E2E8F0 !important; }
 
-    /* Zonas de Carga (Azul Acero Claro con contraste alto) */
     [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stFileUploaderDropzone"] {
         background-color: #1E293B !important; 
         border: 1px solid #38BDF8 !important; border-radius: 8px !important; 
     }
     
-    /* Fuerza a BLANCO el texto "200MB per file • CSV/TIF" */
     [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stFileUploaderDropzone"] p,
     [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stFileUploaderDropzone"] small,
     [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stFileUploaderDropzone"] span,
-    [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stFileUploadDropzoneInstructions"] {
+    [data-testid="stSidebar"] [data-testid="stFileUploadDropzoneInstructions"] {
         color: #FFFFFF !important; 
         font-size: 13px !important; 
         opacity: 1 !important;
     }
 
-    /* Botón interno Upload */
     [data-testid="stSidebar"] [data-testid="stForm"] .stFileUploader button {
         background-color: #0F172A !important; color: #38BDF8 !important; border: 1px solid #38BDF8 !important;
     }
     [data-testid="stSidebar"] [data-testid="stForm"] .stFileUploader button svg { fill: #38BDF8 !important; }
 
-    /* Botón Principal Procesar Datos (Celeste Tecnológico) */
     [data-testid="stSidebar"] [data-testid="stForm"] [data-testid="stBaseButton-secondaryFormSubmit"] {
         background-color: #0EA5E9 !important; color: #FFFFFF !important; font-weight: bold !important; border: none !important;
     }
@@ -205,29 +185,33 @@ with st.sidebar:
     </style>
 """, unsafe_allow_html=True)
    
-    # 🌟 CENTRADO Y POSICIONAMIENTO AL TOPE DEL LOGO NEREUS2 🌟
-    if logo_nereus2_cache is not None:
-        # Estructura de 3 columnas para centrar la imagen perfectamente
-        col_side_1, col_side_2, col_side_3 = st.columns([1, 4, 1])
-        with col_side_2:
-            st.image(logo_nereus2_cache, width=180)
-        st.markdown("<br>", unsafe_allow_html=True) # Espacio sutil antes de los botones
-    else:
-        st.warning("⚠️ Logo 'logo_nereus2.png' no disponible en el servidor.")
-        st.markdown("---")
-
-
-            
     if st.button("⬅️ Cerrar Sesión / Inicio", use_container_width=True):
         st.session_state["app_iniciada"] = False
         st.session_state["procesar_click"] = False
         st.rerun()
         
     with st.form("formulario_carga"):
+        # 1️⃣ SUPERIOR: Logo Licenciado
+        if logo_nuevo_cache is not None:
+            col_lic_1, col_lic_2, col_lic_3 = st.columns([1, 4, 1])
+            with col_lic_2:
+                st.image(logo_nuevo_cache, use_container_width=True)
+        else:
+            st.markdown("<p style='text-align:center; color:#E2E8F0; font-weight:bold;'>✨ [ LOGO LICENCIADO ] ✨</p>", unsafe_allow_html=True)
+            
         st.write("### Panel de datos de entrada")
         archivo_csv = st.file_uploader("Arrastra y suelta o click para subir archivos CSV", type=["csv"])
         archivo_tif = st.file_uploader("Arrastra y suelta o click para subir archivos TIF", type=["tif", "tiff"])
         boton_procesar = st.form_submit_button("Procesar datos")
+        
+        # 2️⃣ INFERIOR: Logo Nereus
+        if logo_nereus2_cache is not None:
+            st.markdown("<br>", unsafe_allow_html=True)
+            col_side_1, col_side_2, col_side_3 = st.columns([1, 4, 1])
+            with col_side_2:
+                st.image(logo_nereus2_cache, width=180)
+        else:
+            st.markdown("<p style='text-align:center; color:#64748B;'>⚠️ Logo Nereus no disponible</p>", unsafe_allow_html=True)
 
 # ==========================================================================================================================================
 # 2. GESTIÓN DE ENTRADA DE DATOS
@@ -250,21 +234,17 @@ if boton_procesar:
     else:
         st.session_state["K001_dem"] = None
 
-# Estado de validación
 ambos_archivos_listos = st.session_state["K001_datos"] is not None and st.session_state["K001_dem"] is not None
 
 if not ambos_archivos_listos:
     st.session_state["procesar_click"] = False
 
-# Extracción segura desde el Session State
 K001_dem = st.session_state["K001_dem"]
 K001_datos = st.session_state["K001_datos"]
-
 
 # ==========================================================================================================================================
 # 3. CONTENIDO CENTRAL DE LA PÁGINA (ESTADO ACTIVO - ABAJO DEL LOGO LICENCIADO)
 # ==========================================================================================================================================
-# Control de flujo de datos por debajo de la cabecera unificada
 if not ambos_archivos_listos:
     st.markdown("<h4 style='text-align: center; color: #555;'>💡 Por favor, en la barra lateral izquierda cargar los archivos CSV y TIF y presionar 'PROCESAR DATOS'.</h4>", unsafe_allow_html=True)
 else:
@@ -273,7 +253,6 @@ else:
     else:
         st.markdown("<h3 style='text-align: center; color: #1E3A8A; font-size: 32px; font-weight: bold;'>Gemelos Digitales - Gestión de Acuíferos</h3>", unsafe_allow_html=True)
 
-        # Renderizado de los Múltiples Tabs de la Plataforma
         tabs = st.tabs([
             "Ubicación", "Zona de Pronóstico", "Preprocesamiento", 
             "Modelamiento Litológico", "Pronóstico Litológico",  
@@ -281,33 +260,35 @@ else:
             "Gráfico 3D"
         ])
         
-        with tabs[0]: # Ubicación
+        with tabs[0]: 
             appk001ubicacion.BLOQUE001(K001_datos, K001_dem)
             appk001ubicacion.BLOQUE002(K001_datos, mapbox_key) 
             appk001ubicacion.BLOQUE003(K001_datos, K001_dem, submuestreo=5)
             
-        with tabs[1]: # Zona de Pronóstico
+        with tabs[1]: 
             appk002zonaestud.BLOQUE001(K001_dem) 
             
-        with tabs[2]: # Preprocesamiento
+        with tabs[2]: 
             appk003preproces.BLOQUE001() 
             appk003preproces.BLOQUE002() 
             appk003preproces.BLOQUE003() 
             
-        with tabs[3]: # Modelamiento Litológico
-            appk004modelalit.BLOQUE001() 
+        with tabs[3]: 
+            #appk004modelalit.BLOQUE001() 
+            pass
             
-        with tabs[4]: # Pronóstico Litológico  
-            appk005pronoslit.BLOQUE001() 
+        with tabs[4]: 
+            #appk005pronoslit.BLOQUE001() 
+            pass
             
-        with tabs[5]: # Modelamiento de Log10 K    
+        with tabs[5]: 
             #appk006modlog10k.BLOQUE001() 
             appk006modlog10k.BLOQUE002()
             
-        with tabs[6]: # Pronóstico Log10 K    
+        with tabs[6]: 
             appk007prolog10k.BLOQUE001() 
             
-        with tabs[7]: # Gráfico 3D    
+        with tabs[7]: 
             appk008graficars.BLOQUE001()
             appk008graficars.BLOQUE002()
 
