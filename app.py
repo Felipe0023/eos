@@ -238,7 +238,7 @@ else:
     if not st.session_state["procesar_click"]:
         st.write("")
     else:
-        st.markdown("<h3 style='text-align: center; color: #1E3A8A; font-size: 32px; font-weight: bold;'>Gemelos Digitales - Gestión de Acuíferos</h3>", unsafe_allow_html=True)
+        st.markdown("<h3 style='text-align: center; color: #1E3A8A; font-size: 32px; font-weight: bold;'>Predicción de la calidad y riesgo del agua subterránea</h3>", unsafe_allow_html=True)
 
         tabs = st.tabs([
             "Ubicación", "Zona de Pronóstico", "Preprocesamiento", 
