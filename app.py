@@ -198,7 +198,7 @@ with st.sidebar:
                 st.image(logo_nuevo_cache, use_container_width=True)
         else:
             st.markdown("<p style='text-align:center; color:#E2E8F0; font-weight:bold;'>✨ [ LOGO LICENCIADO ] ✨</p>", unsafe_allow_html=True)
-        st.write("----")    
+ 
         st.write("### Panel de datos de entrada")
         archivo_csv = st.file_uploader("Arrastra y suelta o click para subir archivos CSV", type=["csv"])
         archivo_tif = st.file_uploader("Arrastra y suelta o click para subir archivos TIF", type=["tif", "tiff"])
