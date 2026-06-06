@@ -123,22 +123,6 @@ if not st.session_state["app_iniciada"]:
     st.stop()  
 
 # ==========================================================================================================================================
-# TOPE ABSOLUTO DEL CUERPO (SE EJECUTA ÚNICAMENTE DESPUÉS DE LA BIENVENIDA)
-# ==========================================================================================================================================
-st.markdown("<br>", unsafe_allow_html=True)
-col_logo_1, col_logo_2, col_logo_3 = st.columns([1, .5, 1])
-with col_logo_2:
-    if logo_nuevo_cache is not None:
-        st.image(logo_nuevo_cache, use_container_width=True)
-    else:
-        st.markdown(
-            "<div style='text-align:center; padding:15px; background:#f0f2f6; border-radius:10px; color:#333; font-weight:bold; margin-bottom:15px;'> "
-            "✨ [ LOGO LICENCIADO ] ✨"
-            "</div>", 
-            unsafe_allow_html=True
-        )
-
-# ==========================================================================================================================================
 # 1. BARRA LATERAL (SIDEBAR) - DISPONIBLE SÓLO SI LA APP YA FUE INICIADA
 # ==========================================================================================================================================
 with st.sidebar:
@@ -243,8 +227,11 @@ K001_dem = st.session_state["K001_dem"]
 K001_datos = st.session_state["K001_datos"]
 
 # ==========================================================================================================================================
-# 3. CONTENIDO CENTRAL DE LA PÁGINA (ESTADO ACTIVO - ABAJO DEL LOGO LICENCIADO)
+# 3. TOPE ABSOLUTO DEL CUERPO CENTRAL Y CONTENIDO (SE EJECUTA ÚNICAMENTE DESPUÉS DE LA BIENVENIDA)
 # ==========================================================================================================================================
+st.markdown("<br>", unsafe_allow_html=True)
+
+# Si los archivos aún no están listos, muestra la advertencia en el tope absoluto del cuerpo
 if not ambos_archivos_listos:
     st.markdown("<h4 style='text-align: center; color: #555;'>💡 Por favor, en la barra lateral izquierda cargar los archivos CSV y TIF y presionar 'PROCESAR DATOS'.</h4>", unsafe_allow_html=True)
 else:
@@ -291,5 +278,7 @@ else:
         with tabs[7]: 
             appk008graficars.BLOQUE001()
             appk008graficars.BLOQUE002()
+
+
 
 
