@@ -30,7 +30,7 @@ import appk002zonaestud
 # ==========================================================================================================================================
 # CONFIGURACIÓN DE LA PÁGINA (Única declaración global)
 # ==========================================================================================================================================
-st.set_page_config(page_title="Gemelos Digitales - Acuíferos", layout="wide")
+st.set_page_config(page_title="Predicción de la calidad y riesgo del agua subterránea", layout="wide")
 
 mapbox_key = st.secrets.get("MAPBOX_TOKEN", "")
 
