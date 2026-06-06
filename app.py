@@ -248,9 +248,9 @@ else:
         ])
         
         with tabs[0]: 
-            appk001ubicacion.BLOQUE001(K001_datos, K001_dem)
+            #appk001ubicacion.BLOQUE001(K001_datos, K001_dem)
             appk001ubicacion.BLOQUE002(K001_datos, mapbox_key) 
-            appk001ubicacion.BLOQUE003(K001_datos, K001_dem, submuestreo=5)
+            #appk001ubicacion.BLOQUE003(K001_datos, K001_dem, submuestreo=5)
             
         with tabs[1]: 
             appk002zonaestud.BLOQUE001(K001_dem) 
