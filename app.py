@@ -207,7 +207,7 @@ with st.sidebar:
         # 2️⃣ INFERIOR: Logo Nereus
         if logo_nereus2_cache is not None:
             st.markdown("<br>", unsafe_allow_html=True)
-            col_side_1, col_side_2, col_side_3 = st.columns([1, 4, 1])
+            col_side_1, col_side_2, col_side_3 = st.columns([1, 5, 1])
             with col_side_2:
                 st.image(logo_nereus2_cache, width=180)
         else:
