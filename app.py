@@ -20,7 +20,7 @@ import base64
 
 import appk001ubicacion
 import appk002zonaestud
-#import appk003preproces
+import appk003preproces
 #import appk004modelalit
 #import appk005pronoslit 
 #import appk006modlog10k
@@ -255,6 +255,9 @@ else:
         with tabs[1]: 
             appk002zonaestud.BLOQUE001(K001_dem) 
             
-
+        with tabs[2]: # Preprocesamiento
+            #appk003preproces.BLOQUE001() 
+            #appk003preproces.BLOQUE002() 
+            appk003preproces.BLOQUE003() 
 
 
