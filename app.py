@@ -255,30 +255,6 @@ else:
         with tabs[1]: 
             appk002zonaestud.BLOQUE001(K001_dem) 
             
-        with tabs[2]: 
-            appk003preproces.BLOQUE001() 
-            appk003preproces.BLOQUE002() 
-            appk003preproces.BLOQUE003() 
-            
-        with tabs[3]: 
-            #appk004modelalit.BLOQUE001() 
-            pass
-            
-        with tabs[4]: 
-            #appk005pronoslit.BLOQUE001() 
-            pass
-            
-        with tabs[5]: 
-            #appk006modlog10k.BLOQUE001() 
-            appk006modlog10k.BLOQUE002()
-            
-        with tabs[6]: 
-            appk007prolog10k.BLOQUE001() 
-            
-        with tabs[7]: 
-            appk008graficars.BLOQUE001()
-            appk008graficars.BLOQUE002()
-
 
 
 
