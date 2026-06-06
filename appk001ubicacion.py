@@ -81,72 +81,87 @@ def BLOQUE001(df_raw, tif_bytes):
             mime="text/html"
         )
 
-def BLOQUE002(df_raw,mapbox_key):   
+
+def BLOQUE002(df_raw, mapbox_key):   
     with st.container(border=True):
         st.markdown("<h4 style='text-align: center;'>Monitoreo de Perforaciones</h3>", unsafe_allow_html=True)
  
-        # Fila de Métricas
+        # Fila de Métricas (Se remueve K y se agregan métricas de posición/elevación)
         c1, c2, c3 = st.columns(3)
-        with c1: st.metric("Total de Registros", len(df_raw))
-        with c2: st.metric("Promedio Valor K", f"{df_raw['K'].mean():.2f}")
-        with c3: st.metric("Profundidad Promedio", f"{df_raw['Profundidad'].mean():.1f} m")
+        with c1: 
+            st.metric("Total de Registros", len(df_raw))
+        with c2: 
+            st.metric("Altitud Promedio", f"{df_raw['Altitud'].mean():.1f} m")
+        with c3: 
+            st.metric("Profundidad Promedio", f"{df_raw['Profundidad'].mean():.1f} m")
         
-        # 1. Función de color basada en tu columna 'K'
-        def color_por_k(k_val):
+        # 1. Función de color basada en la Profundidad para identificar niveles
+        def color_por_profundidad(prof):
             try:
-                # Si K es muy pequeño o negativo (log), usamos abs para la intensidad
-                v = float(k_val)
-                intensidad = min(255, int(abs(v) * 25))
-                return [intensidad, 100, 255 - intensidad, 160]
+                v = float(prof)
+                # A mayor profundidad, mayor intensidad de color azul/rojo
+                intensidad = min(255, int(abs(v) * 2.5))
+                return [intensidad, 100, 255 - intensidad, 180]
             except:
-                return [200, 200, 200, 160] # Gris si hay error
+                return [0, 150, 255, 180] # Celeste por defecto si falla
 
-        # 2. Verificamos que las columnas existan
-        if 'K' in df_raw.columns and 'Latitud' in df_raw.columns:
+        # 2. Verificamos las columnas de posicionamiento necesarias
+        columnas_requeridas = ['Longitud', 'Latitud', 'Profundidad', 'Cota', 'Altitud']
+        if all(col in df_raw.columns for col in ['Longitud', 'Latitud']):
             df_mapa = df_raw.copy()
-            df_mapa['color'] = df_mapa['K'].apply(color_por_k)
+            df_mapa['color'] = df_mapa['Profundidad'].apply(color_por_profundidad)
                 
-            # Tooltip con recuadro (estilo tipo "card")
+            # Tooltip con recuadro formateado solo con las 5 variables requeridas
             t_html = """
             <div style="
                 background-color: #ffffff; 
                 color: #333333; 
-                padding: 10px; 
+                padding: 12px; 
                 border-radius: 8px; 
                 border: 1px solid #cccccc;
                 box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
                 font-family: sans-serif;
+                line-height: 1.5;
             ">
-                <b style="color: #2E7D32;">🪨 Longitud:</b> {Longitud}<br>
-                <b style="color: #2E7D32;">🪨 Latitud:</b> {Latitud}<br>
-                <b style="color: #2E7D32;">🪨 Profundidad:</b> {Profundidad}<br>
-                <b style="color: #2E7D32;">🪨 Roca:</b> {Tipo_Roca}<br>
-                <b style="color: #1565C0;">💧 Conductividad (K):</b> {K}
+                <b style="color: #1E3A8A;">📍 Longitud:</b> {Longitud}<br>
+                <b style="color: #1E3A8A;">📍 Latitud:</b> {Latitud}<br>
+                <hr style="margin: 4px 0; border: 0; border-top: 1px solid #eee;">
+                <b style="color: #0284C7;">📐 Profundidad:</b> {Profundidad} m<br>
+                <b style="color: #0284C7;">🏔️ Cota:</b> {Cota} m<br>
+                <b style="color: #0284C7;">🏔️ Altitud:</b> {Altitud} m
             </div>
             """
 
-        # 3. Renderizar Mapa
-        st.pydeck_chart(pdk.Deck(
-            map_style='mapbox://styles/mapbox/outdoors-v12',
-            api_keys={'mapbox': mapbox_key},
-            initial_view_state=pdk.ViewState(
-                latitude=df_mapa["Latitud"].mean(),
-                longitude=df_mapa["Longitud"].mean(),
-                zoom=12, 
-                pitch=45
-            ),
-            layers=[
-                pdk.Layer(
-                    "ScatterplotLayer",
-                    df_mapa,
-                    get_position=["Longitud", "Latitud"],
-                    get_fill_color="color",
-                    get_radius=100,
-                    pickable=True
-                )
-            ],
-            tooltip={"html": t_html}
-        ))
+            # 3. Renderizar Mapa mediante PyDeck
+            st.pydeck_chart(pdk.Deck(
+                map_style='mapbox://styles/mapbox/outdoors-v12',
+                api_keys={'mapbox': mapbox_key},
+                initial_view_state=pdk.ViewState(
+                    latitude=df_mapa["Latitud"].mean(),
+                    longitude=df_mapa["Longitud"].mean(),
+                    zoom=11, 
+                    pitch=45
+                ),
+                layers=[
+                    pdk.Layer(
+                        "ScatterplotLayer",
+                        df_mapa,
+                        get_position=["Longitud", "Latitud"],
+                        get_fill_color="color",
+                        get_radius=120,
+                        pickable=True
+                    )
+                ],
+                tooltip={"html": t_html}
+            ))
+        else:
+            st.error("⚠️ Faltan columnas de posicionamiento geográfico (Latitud/Longitud) en el archivo de datos.")
+
+
+
+
+
+
 
 def BLOQUE003(df_raw, df_tif, submuestreo=5):
     with st.container(border=True):
