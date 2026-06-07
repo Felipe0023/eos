@@ -1,166 +1,199 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import joblib
-import io
 import plotly.express as px
-from xgboost import XGBClassifier
-from sklearn.preprocessing import LabelEncoder
-from sklearn.model_selection import train_test_split, cross_val_score, RepeatedStratifiedKFold
-from sklearn.neighbors import KNeighborsClassifier
 
-# --- FUNCIONES CACHEADAS PARA VELOCIDAD ---
-
-@st.cache_data
-def filtrar_datos_roca(df):
-    conteo_rocas = df['Tipo_Roca'].value_counts()
-    rocas_suficientes = conteo_rocas[conteo_rocas >= 5].index 
-    df_filtrado = df[df['Tipo_Roca'].isin(rocas_suficientes)].copy()
-    rocas_eliminadas = list(set(df['Tipo_Roca'].unique()) - set(rocas_suficientes))
-    return df_filtrado, rocas_eliminadas
-
-@st.cache_resource
-def entrenar_modelo_clasificacion(X_train, y_train, _X_val_cruzada, _y_val_cruzada):
-    model = XGBClassifier(
-        n_estimators=100,       # ⚡ Reducido de 100 a 50 (mantiene la precisión y duplica la velocidad)
-        learning_rate=0.05,
-        max_depth=5,           # ⚡ Reducido de 5 a 4 para aligerar los árboles matemáticos
-        subsample=0.8,
-        colsample_bytree=0.8,
-        objective='multi:softprob',
-        random_state=42,
-        eval_metric='mlogloss',
-        enable_categorical=False,  
-        tree_method='hist',
-        n_jobs=-1              # ⚡ CRÍTICO: Usa TODOS los núcleos de tu procesador en paralelo
-    )
-    
-    # 3 splits es ultra rápido y estadísticamente suficiente para 448 datos
-    cv = RepeatedStratifiedKFold(n_splits=5, n_repeats=1, random_state=42)
-    cv_scores = cross_val_score(model, _X_val_cruzada, _y_val_cruzada, cv=cv, scoring='accuracy', n_jobs=-1)
-    
-    model.fit(X_train, y_train)
-    return model, cv_scores
-
-def BLOQUE001(): 
-    st.markdown("<h4 style='text-align: center;'>Modelado de Clasificación: Tipo de Roca & Puente HGS</h4>", unsafe_allow_html=True)
-    
-    # 1. VERIFICAR DATOS DE LA SESIÓN
-    if 'K004_escalear' not in st.session_state or st.session_state['K004_escalear'] is None:
-        st.warning("⚠️ No se encontraron los datos completamente reescalados en 'K004_escalear'.")
-        return
-
-    df = st.session_state['K004_escalear'].copy()
-
-    if 'Tipo_Roca' not in df.columns or 'HGS' not in df.columns:
-        st.error("❌ Error: Faltan las columnas 'Tipo_Roca' o 'HGS'.")
-        return
-
-    df_filtrado, rocas_eliminadas = filtrar_datos_roca(df)
-    
-    # Inicializar banderas en el estado de sesión para evitar ejecuciones automáticas
-    if 'entrenamiento_completado' not in st.session_state:
-        st.session_state['entrenamiento_completado'] = False
-
-    # 🚨 EL ESCUDO: Solo se entrena si el usuario presiona el botón
-    btn_entrenar = st.button("🚀 Iniciar Entrenamiento de Modelos", use_container_width=True)
-
-    if btn_entrenar:
-        df_filtrado['HGS'] = df_filtrado['HGS'].astype(int)
-
-        # 2. PREPARACIÓN DE MATRICES
-        cols_prohibidas = ['Tipo_Roca', 'log10_K', 'Etiqueta', 'tipo_roca']
-        X = df_filtrado.drop(columns=[c for c in cols_prohibidas if c in df_filtrado.columns])
-        X = X.select_dtypes(include=[np.number]) 
+def BLOQUE004():
+    with st.container(border=True):
+        st.markdown("<h4 style='text-align: center;'>🧬 Índices de Metales Pesados y Riesgo a la Salud</h4>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center; color: gray;'>Evaluación de HPI, MI, Cd y Riesgo Toxicológico (HI Adulto)</p>", unsafe_allow_html=True)
         
-        y = df_filtrado['Tipo_Roca']
-        le = LabelEncoder()
-        y_encoded = le.fit_transform(y)
+        # 1. Verificar si existen datos cargados en el session_state
+        if "K001_datos" not in st.session_state or st.session_state["K001_datos"] is None:
+            st.warning("⚠️ No se detectaron datos cargados. Por favor, sube un archivo en la pestaña correspondiente.")
+            return
 
-        try:
-            X_train, X_test, y_train, y_test = train_test_split(
-                X, y_encoded, test_size=0.2, random_state=42, stratify=y_encoded
-            )
+        # 2. Cargar datos (hacer copia para evitar SettingWithCopyWarning)
+        df = st.session_state["K001_datos"].copy()
+        df.columns = df.columns.str.strip() # Limpieza preventiva de espacios
 
-            with st.status("🧠 Procesando algoritmos en paralelo...", expanded=True) as status:
-                # XGBoost
-                model, cv_scores = entrenar_modelo_clasificacion(X_train, y_train, X, y_encoded)
-                
-                # KNN Puente
-                cols_coordenadas = ['Profundidad', 'Longitud', 'Latitud', 'Altitud']
-                X_knn = df_filtrado[cols_coordenadas]
-                y_knn = df_filtrado['HGS']
-                asignador_hgs = KNeighborsClassifier(n_neighbors=1, weights='distance', n_jobs=-1)
-                asignador_hgs.fit(X_knn, y_knn)
-                
-                # Guardar todo en session_state
-                st.session_state['modelo_entrenado_roca'] = model
-                st.session_state['label_encoder_roca'] = le
-                st.session_state['asignador_hgs_knn'] = asignador_hgs
-                st.session_state['cv_scores_mean'] = cv_scores.mean()
-                st.session_state['X_columns'] = X.columns
-                st.session_state['feature_importances'] = model.feature_importances_
-                
-                # KNN Fidelidad
-                auto_pred = asignador_hgs.predict(X_knn)
-                st.session_state['fidelidad_knn'] = np.sum(auto_pred == y_knn) / len(y_knn)
-                
-                st.session_state['entrenamiento_completado'] = True
-                status.update(label="✅ ¡Modelos guardados con éxito!", state="complete")
+        # Parámetros estándar de Metales (Límite_Si, Peso_wi, RfD_Oral)
+        parametros_metales = {
+            'Al': (0.2,   0.02, 1.0),
+            'Cd': (0.003, 0.3,  0.0005),
+            'Cr': (0.05,  0.02, 0.003),
+            'Cu': (2.0,   0.001,0.04),
+            'Fe': (0.3,   0.003,0.7),
+            'Mn': (0.1,   0.01, 0.14),
+            'Ni': (0.02,  0.05, 0.02),
+            'Pb': (0.01,  0.1,  0.0035),
+            'Zn': (3.0,   0.0003,0.30)
+        }
 
-        except Exception as e:
-            st.error(f"❌ Error durante el entrenamiento: {e}")
+        # Filtrar metales presentes
+        metales_presentes = {k: v for k, v in parametros_metales.items() if k in df.columns}
 
-    # 4. DESPLIEGUE DE RESULTADOS (Solo si ya se entrenó una vez con éxito)
-    if st.session_state['entrenamiento_completado']:
-        col1, col2 = st.columns(2)
-        with col1:
-            with st.container(border=True):
-                st.metric("Precisión Media XGBoost (CV)", f"{st.session_state['cv_scores_mean']:.2%}")
-            with st.container(border=True):
-                st.write("**Importancia de Variables (XGBoost)**")
-                importancias = pd.DataFrame({
-                    'Feature': st.session_state['X_columns'], 
-                    'Importance': st.session_state['feature_importances']
-                }).sort_values(by='Importance', ascending=False).head(10)
-                
-                fig_imp = px.bar(importancias, x='Importance', y='Feature', orientation='h', color='Importance',
-                                 template="plotly_white", color_discrete_sequence=px.colors.qualitative.Safe)
-                fig_imp.update_layout(height=240, margin=dict(t=10, b=10))
-                st.plotly_chart(fig_imp, use_container_width=True)
+        if len(metales_presentes) == 0:
+            st.error("❌ El set de datos no contiene ninguna columna con los metales requeridos (Al, Cd, Cr, Cu, Fe, Mn, Ni, Pb, Zn).")
+            return
 
-        with col2:
-            with st.container(border=True):
-                st.metric("Fidelidad del Puente KNN con DBSCAN", f"{st.session_state['fidelidad_knn']:.2%}")
-                
-            with st.container(border=True):
-                st.write("**Distribución de Clases Validadas**")
-                fig_pie = px.pie(df_filtrado, names='Tipo_Roca', hole=0.4,
-                                 template="plotly_white", color_discrete_sequence=px.colors.qualitative.Safe)
-                fig_pie.update_layout(height=240, margin=dict(t=10, b=10))
-                st.plotly_chart(fig_pie, use_container_width=True)
+        with st.expander("🔬 Ver parámetros de referencia toxicológica (US EPA)"):
+            st.write("Metales detectados y evaluados:", list(metales_presentes.keys()))
+            df_ref = pd.DataFrame.from_dict(metales_presentes, orient='index', columns=['Límite Permisible (Si)', 'Peso (wi)', 'RfD Oral'])
+            st.table(df_ref)
 
-        # 5. PANEL DE DESCARGA
-        with st.container(border=True):  
-            st.markdown("##### 📂 Descarga de Artefactos de IA (Módulo K005)")
-            c1, c2, c3 = st.columns(3)
+        # =====================================================================
+        # CÁLCULO DE LOS ÍNDICES (Fórmulas optimizadas)
+        # =====================================================================
+        hpi_list, mi_list, cd_list, hi_list = [], [], [], []
+
+        # Parámetros fijos para el HI (Adultos)
+        IR = 2.0   
+        BW = 70.0  
+
+        sum_wi_hpi = sum(v[1] for v in metales_presentes.values())
+
+        for idx, row in df.iterrows():
+            sum_qi_wi = 0
+            mi_acumulado = 0
+            cd_acumulado = 0
+            hi_acumulado = 0
+
+            for metal, (Si, wi, RfD) in metales_presentes.items():
+                C = row[metal]
+                if pd.isna(C):
+                    continue
+
+                # A) HPI
+                qi = (C / Si) * 100
+                sum_qi_wi += qi * wi
+
+                # B) MI
+                mi_acumulado += (C / Si)
+
+                # C) Contamination Degree (Cd)
+                cd_acumulado += ((C / Si) - 1)
+
+                # D) Hazard Index (HI)
+                cdi = (C * IR) / BW
+                hq = cdi / RfD
+                hi_acumulado += hq
+
+            hpi_list.append(sum_qi_wi / sum_wi_hpi if sum_wi_hpi > 0 else np.nan)
+            mi_list.append(mi_acumulado)
+            cd_list.append(cd_acumulado)
+            hi_list.append(hi_acumulado)
+
+        df['HPI'] = hpi_list
+        df['MI'] = mi_list
+        df['Cd'] = cd_list
+        df['HI_Adulto'] = hi_list
+
+        # Clasificaciones cualitativas
+        def clasificar_indices(row):
+            c_hpi = "Bajo (<100)" if row['HPI'] < 100 else "Crítico (≥100)"
+            c_mi = "Limpio (<1)" if row['MI'] < 1 else ("Moderado (1-6)" if row['MI'] <= 6 else "Crítico (>6)")
+            c_cd = "Baja (<1)" if row['Cd'] < 1 else ("Media (1-3)" if row['Cd'] <= 3 else "Alta (>3)")
+            c_hi = "Seguro (≤1)" if row['HI_Adulto'] <= 1 else "Riesgo a la salud (>1)"
+            return pd.Series([c_hpi, c_mi, c_cd, c_hi])
+
+        df[['Clase_HPI', 'Clase_MI', 'Clase_Cd', 'Clase_HI']] = df.apply(clasificar_indices, axis=1)
+
+        # Guardar en memoria global de la App
+        st.session_state["K001_datos"] = df
+
+        # =====================================================================
+        # SECCIÓN GRÁFICA INTERACTIVA (TABS INTERNOS)
+        # =====================================================================
+        st.write("---")
+        st.markdown("#### 📊 Visualización de Resultados")
+        
+        tab_barras, tab_mapas = st.tabs(["📊 Gráficos de Distribución (Barras)", "🗺️ Mapeo Geoespacial 2D"])
+
+        with tab_barras:
+            # Creamos sub-columnas para organizar los 4 gráficos de barras
+            col1, col2 = st.columns(2)
             
-            # Descargas seguras usando los objetos guardados en el estado
-            model_buf = io.BytesIO()
-            joblib.dump(st.session_state['modelo_entrenado_roca'], model_buf)
-            c1.download_button(label="💾 Descargar Clasificador (.joblib)", data=model_buf.getvalue(), file_name="K005_modelo_tipo_roca.joblib", use_container_width=True)
+            with col1:
+                # 1. HPI
+                fig_hpi = px.bar(df['Clase_HPI'].value_counts().reset_index(), x='Clase_HPI', y='count', 
+                                 title="Distribución de Clases HPI", labels={'count': 'Muestras', 'Clase_HPI':'Clase'},
+                                 color='Clase_HPI', color_discrete_map={"Bajo (<100)": "#3B82F6", "Crítico (≥100)": "#EF4444"})
+                st.plotly_chart(fig_hpi, use_container_width=True)
+                
+                # 2. Cd
+                fig_cd = px.bar(df['Clase_Cd'].value_counts().reset_index(), x='Clase_Cd', y='count', 
+                                title="Grado de Contaminación (Cd)", labels={'count': 'Muestras', 'Clase_Cd':'Clase'},
+                                color='Clase_Cd', color_discrete_map={"Baja (<1)": "#10B981", "Media (1-3)": "#F59E0B", "Alta (>3)": "#EF4444"})
+                st.plotly_chart(fig_cd, use_container_width=True)
 
-            le_buf = io.BytesIO()
-            joblib.dump(st.session_state['label_encoder_roca'], le_buf)
-            c2.download_button(label="🏷️ Descargar Encoder (.joblib)", data=le_buf.getvalue(), file_name="K005_label_encoder_roca.joblib", use_container_width=True)
+            with col2:
+                # 3. MI
+                fig_mi = px.bar(df['Clase_MI'].value_counts().reset_index(), x='Clase_MI', y='count', 
+                                title="Índice de Metales (MI)", labels={'count': 'Muestras', 'Clase_MI':'Clase'},
+                                color='Clase_MI', color_discrete_map={"Limpio (<1)": "#10B981", "Moderado (1-6)": "#F59E0B", "Crítico (>6)": "#EF4444"})
+                st.plotly_chart(fig_mi, use_container_width=True)
+                
+                # 4. HI Adulto
+                fig_hi = px.bar(df['Clase_HI'].value_counts().reset_index(), x='Clase_HI', y='count', 
+                                title="Índice de Peligro a la Salud (HI Adulto)", labels={'count': 'Muestras', 'Clase_HI':'Clase'},
+                                color='Clase_HI', color_discrete_map={"Seguro (≤1)": "#3B82F6", "Riesgo a la salud (>1)": "#7F1D1D"})
+                st.plotly_chart(fig_hi, use_container_width=True)
 
-            knn_buf = io.BytesIO()
-            joblib.dump(st.session_state['asignador_hgs_knn'], knn_buf)
-            c3.download_button(label="📡 Descargar Puente HGS (.joblib)", data=knn_buf.getvalue(), file_name="K005_asignador_hgs_knn.joblib", use_container_width=True)
+        with tab_mapas:
+            if 'Latitud' in df.columns and 'Longitud' in df.columns:
+                # Eliminar nulos en coordenadas para el mapa
+                df_mapa = df.dropna(subset=['Latitud', 'Longitud'])
+                
+                # Selector dinámico de qué índice ver reflejado en el mapa
+                indice_seleccionado = st.selectbox("Selecciona el índice numérico a graficar en el mapa:", 
+                                                   ['HPI', 'MI', 'Cd', 'HI_Adulto'])
+                
+                columnas_id = [c for c in ['ID', 'Id', 'id', 'Muestra'] if c in df.columns]
+                id_hover = columnas_id[0] if columnas_id else df.columns[0]
 
+                # Creación del scatter mapbox 2D
+                fig_2d = px.scatter_mapbox(
+                    df_mapa, lat="Latitud", lon="Longitud",
+                    color=indice_seleccionado,
+                    size=np.repeat(14, len(df_mapa)),
+                    # Escala cromática continua de Azul (Seguro) a Rojo (Peligro)
+                    color_continuous_scale=["#0000FF", "#3B82F6", "#F59E0B", "#FF0000"],
+                    hover_name=id_hover,
+                    hover_data={indice_seleccionado: ":.3f", "Clase_"+indice_seleccionado.split('_')[0]: True, "Latitud": False, "Longitud": False},
+                    zoom=11,
+                    title=f"Distribución Espacial Continua de {indice_seleccionado}"
+                )
 
+                fig_2d.update_layout(
+                    mapbox=dict(style="open-street-map"), # Libre sin Tokens de Mapbox
+                    margin={"r":0,"t":40,"l":0,"b":0}
+                )
+                st.plotly_chart(fig_2d, use_container_width=True, config={'mapboxAccessToken': ''})
+            else:
+                st.info("ℹ️ Para proyectar los mapas 2D continuos, el archivo CSV original debe contener las columnas de georreferenciación 'Latitud' y 'Longitud'.")
 
+        # =====================================================================
+        # MATRIZ DE DATOS Y ENLACE DE DESCARGA
+        # =====================================================================
+        st.write("---")
+        st.markdown("##### 📋 Matriz de Resultados de Evaluación Ambiental")
+        
+        columnas_id = [c for c in ['ID', 'Id', 'id', 'Muestra'] if c in df.columns]
+        id_col = columnas_id[0] if columnas_id else df.columns[0]
+        
+        columnas_finales = [id_col, 'HPI', 'Clase_HPI', 'MI', 'Clase_MI', 'Cd', 'Clase_Cd', 'HI_Adulto', 'Clase_HI'] + list(metales_presentes.keys())
+        st.dataframe(df[columnas_finales], use_container_width=True, hide_index=True)
 
+        # Botón de Descarga
+        csv_buffer = df.to_csv(index=False).encode('utf-8')
+        st.download_button(
+            label="📥 Descargar Reporte Toxicológico Completo (CSV)",
+            data=csv_buffer,
+            file_name="datos_evaluacion_metales.csv",
+            mime="text/csv",
+            use_container_width=True
+        )
 
 
 
