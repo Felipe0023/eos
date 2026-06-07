@@ -86,14 +86,14 @@ def BLOQUE004():
 
         df['HPI'] = hpi_list
         df['MI'] = mi_list
-        df['Cd'] = cd_list
+        df['Cd_Index'] = cd_list  # 🛠️ CAMBIO 1: Renombrado para evitar duplicidad con el metal Cadmio
         df['HI_Adulto'] = hi_list
 
         # Clasificaciones cualitativas
         def clasificar_indices(row):
             c_hpi = "Bajo (<100)" if row['HPI'] < 100 else "Crítico (≥100)"
             c_mi = "Limpio (<1)" if row['MI'] < 1 else ("Moderado (1-6)" if row['MI'] <= 6 else "Crítico (>6)")
-            c_cd = "Baja (<1)" if row['Cd'] < 1 else ("Media (1-3)" if row['Cd'] <= 3 else "Alta (>3)")
+            c_cd = "Baja (<1)" if row['Cd_Index'] < 1 else ("Media (1-3)" if row['Cd_Index'] <= 3 else "Alta (>3)") # 🛠️ CAMBIO 2: Uso del nuevo nombre
             c_hi = "Seguro (≤1)" if row['HI_Adulto'] <= 1 else "Riesgo a la salud (>1)"
             return pd.Series([c_hpi, c_mi, c_cd, c_hi])
 
@@ -111,7 +111,6 @@ def BLOQUE004():
         tab_barras, tab_mapas = st.tabs(["📊 Gráficos de Distribución (Barras)", "🗺️ Mapeo Geoespacial 2D"])
 
         with tab_barras:
-            # Creamos sub-columnas para organizar los 4 gráficos de barras
             col1, col2 = st.columns(2)
             
             with col1:
@@ -123,7 +122,7 @@ def BLOQUE004():
                 
                 # 2. Cd
                 fig_cd = px.bar(df['Clase_Cd'].value_counts().reset_index(), x='Clase_Cd', y='count', 
-                                title="Grado de Contaminación (Cd)", labels={'count': 'Muestras', 'Clase_Cd':'Clase'},
+                                title="Grado de Contaminación (Cd Index)", labels={'count': 'Muestras', 'Clase_Cd':'Clase'},
                                 color='Clase_Cd', color_discrete_map={"Baja (<1)": "#10B981", "Media (1-3)": "#F59E0B", "Alta (>3)": "#EF4444"})
                 st.plotly_chart(fig_cd, use_container_width=True)
 
@@ -142,22 +141,19 @@ def BLOQUE004():
 
         with tab_mapas:
             if 'Latitud' in df.columns and 'Longitud' in df.columns:
-                # Eliminar nulos en coordenadas para el mapa
                 df_mapa = df.dropna(subset=['Latitud', 'Longitud'])
                 
-                # Selector dinámico de qué índice ver reflejado en el mapa
+                # Selector dinámico
                 indice_seleccionado = st.selectbox("Selecciona el índice numérico a graficar en el mapa:", 
-                                                   ['HPI', 'MI', 'Cd', 'HI_Adulto'])
+                                                   ['HPI', 'MI', 'Cd_Index', 'HI_Adulto']) # 🛠️ CAMBIO 3: Cambiado 'Cd' por 'Cd_Index'
                 
                 columnas_id = [c for c in ['ID', 'Id', 'id', 'Muestra'] if c in df.columns]
                 id_hover = columnas_id[0] if columnas_id else df.columns[0]
 
-                # Creación del scatter mapbox 2D
                 fig_2d = px.scatter_mapbox(
                     df_mapa, lat="Latitud", lon="Longitud",
                     color=indice_seleccionado,
                     size=np.repeat(14, len(df_mapa)),
-                    # Escala cromática continua de Azul (Seguro) a Rojo (Peligro)
                     color_continuous_scale=["#0000FF", "#3B82F6", "#F59E0B", "#FF0000"],
                     hover_name=id_hover,
                     hover_data={indice_seleccionado: ":.3f", "Clase_"+indice_seleccionado.split('_')[0]: True, "Latitud": False, "Longitud": False},
@@ -166,7 +162,7 @@ def BLOQUE004():
                 )
 
                 fig_2d.update_layout(
-                    mapbox=dict(style="open-street-map"), # Libre sin Tokens de Mapbox
+                    mapbox=dict(style="open-street-map"),
                     margin={"r":0,"t":40,"l":0,"b":0}
                 )
                 st.plotly_chart(fig_2d, use_container_width=True, config={'mapboxAccessToken': ''})
@@ -182,7 +178,8 @@ def BLOQUE004():
         columnas_id = [c for c in ['ID', 'Id', 'id', 'Muestra'] if c in df.columns]
         id_col = columnas_id[0] if columnas_id else df.columns[0]
         
-        columnas_finales = [id_col, 'HPI', 'Clase_HPI', 'MI', 'Clase_MI', 'Cd', 'Clase_Cd', 'HI_Adulto', 'Clase_HI'] + list(metales_presentes.keys())
+        # 🛠️ CAMBIO 4: Cambiado 'Cd' por 'Cd_Index' en la estructura final de columnas a imprimir
+        columnas_finales = [id_col, 'HPI', 'Clase_HPI', 'MI', 'Clase_MI', 'Cd_Index', 'Clase_Cd', 'HI_Adulto', 'Clase_HI'] + list(metales_presentes.keys())
         st.dataframe(df[columnas_finales], use_container_width=True, hide_index=True)
 
         # Botón de Descarga
@@ -194,7 +191,6 @@ def BLOQUE004():
             mime="text/csv",
             use_container_width=True
         )
-
 
 
 
