@@ -258,6 +258,12 @@ else:
         with tabs[2]: # Preprocesamiento
             #appk003preproces.BLOQUE001() 
             #appk003preproces.BLOQUE002() 
+
+        with tabs[3]: # Modelamiento Litológico
+            appk004modelalit.BLOQUE004() 
+
+
+            
             appk003preproces.BLOQUE003() 
 
 
