@@ -85,11 +85,10 @@ def BLOQUE003():
         df['Clasificacion_Calidad'] = df['DWQI'].apply(clasificar_calidad)
 
         # 🌟 CRÍTICO: Guardar los nuevos cálculos de vuelta en el session_state original 
-        # para que estén disponibles globalmente en toda la aplicación
         st.session_state["K001_datos"] = df
 
         # ==================================================================================================================================
-        # DESPLIEGUE EN INTERFAZ GRÁFICA DE STREAMLIT
+        # DESPLEGUE EN INTERFAZ GRÁFICA DE STREAMLIT
         # ==================================================================================================================================
         
         # Bloque de Métricas Clave
@@ -120,6 +119,47 @@ def BLOQUE003():
         )
         st.plotly_chart(fig, use_container_width=True)
 
+        # ==================================================================================================================================
+        # 🗺️ NUEVO: MAPA INTERACTIVO 2D CON ESCALA CONTINUA (AZUL A ROJO)
+        # ==================================================================================================================================
+        if 'Latitud' in df.columns and 'Longitud' in df.columns:
+            st.write("---")
+            st.markdown("##### 🗺️ Distribución Espacial del Índice DWQI")
+            
+            # Buscamos de forma segura la columna identificadora para las etiquetas del mapa
+            columnas_id = [c for c in ['ID', 'Id', 'id', 'Muestra'] if c in df.columns]
+            id_hover = columnas_id[0] if columnas_id else df.columns[0]
+
+            # Construcción del mapa en 2D interactivo
+            fig_mapa = px.scatter_mapbox(
+                df,
+                lat="Latitud",
+                lon="Longitud",
+                color="DWQI",  # Mapeo numérico para la barra de color continua
+                size=np.repeat(12, len(df)),  # Tamaño visual de los puntos en el mapa
+                color_continuous_scale=["#0000FF", "#3B82F6", "#F59E0B", "#FF0000"], # Escala personalizada: Azul -> Celeste -> Naranja -> Rojo
+                range_color=[0, max(120, df['DWQI'].max())], # Asegurar rango de visualización óptimo
+                hover_name=id_hover,
+                hover_data={"DWQI": ":.2f", "Clasificacion_Calidad": True, "Latitud": False, "Longitud": False},
+                zoom=11,
+                title="Mapeo Geográfico del DWQI"
+            )
+
+            # Estilo del mapa de fondo (OpenStreetMap no requiere tokens externos para este gráfico 2D)
+            fig_mapa.update_layout(
+                mapbox_style="open-street-map",
+                margin={"r":0,"t":40,"l":0,"b":0},
+                coloraxis_colorbar=dict(
+                    title="Índice DWQI",
+                    ticks="outside",
+                    tickvals=[0, 25, 50, 75, 100],
+                    ticktext=["0 (Exc)", "25 (Bna)", "50 (Reg)", "75 (Pob)", "100+ (M.Pob)"]
+                )
+            )
+            st.plotly_chart(fig_mapa, use_container_width=True)
+        else:
+            st.info("ℹ️ Para visualizar el mapa espacial 2D, el set de datos debe contener las columnas 'Latitud' y 'Longitud'.")
+
         # Mostrar tabla interactiva de resultados
         st.write("---")
         st.markdown("##### 📋 Matriz de Resultados Calculados")
@@ -139,3 +179,6 @@ def BLOQUE003():
             mime="text/csv",
             use_container_width=True
         )
+
+
+
