@@ -145,9 +145,14 @@ def BLOQUE003():
                 title="Mapeo Geográfico del DWQI"
             )
 
+
+
+            
             # Estilo del mapa de fondo (OpenStreetMap no requiere tokens externos para este gráfico 2D)
             fig_mapa.update_layout(
-                mapbox_style="open-street-map",
+                mapbox=dict(
+                    style="open-street-map"  # Forzar OpenStreetMap nativo libre
+                ),
                 margin={"r":0,"t":40,"l":0,"b":0},
                 coloraxis_colorbar=dict(
                     title="Índice DWQI",
@@ -156,7 +161,12 @@ def BLOQUE003():
                     ticktext=["0 (Exc)", "25 (Bna)", "50 (Reg)", "75 (Pob)", "100+ (M.Pob)"]
                 )
             )
-            st.plotly_chart(fig_mapa, use_container_width=True)
+            
+            # Asegurar que la configuración de Plotly ignore tokens globales
+            st.plotly_chart(fig_mapa, use_container_width=True, config={'mapboxAccessToken': ''})
+
+
+        
         else:
             st.info("ℹ️ Para visualizar el mapa espacial 2D, el set de datos debe contener las columnas 'Latitud' y 'Longitud'.")
 
