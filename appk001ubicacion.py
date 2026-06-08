@@ -139,7 +139,7 @@ def BLOQUE002(df_raw, mapbox_key):
                 initial_view_state=pdk.ViewState(
                     latitude=df_mapa["Latitud"].mean(),
                     longitude=df_mapa["Longitud"].mean(),
-                    zoom=11, 
+                    zoom=5, 
                     pitch=45
                 ),
                 layers=[
