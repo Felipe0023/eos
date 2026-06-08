@@ -83,9 +83,6 @@ def BLOQUE001(df_raw, tif_bytes):
 
 
 
-
-
-
 def BLOQUE002(df_raw, mapbox_key):   
     with st.container(border=True):
         st.markdown("<h4 style='text-align: center;'>Monitoreo de Perforaciones</h3>", unsafe_allow_html=True)
@@ -99,6 +96,10 @@ def BLOQUE002(df_raw, mapbox_key):
         with c3: 
             st.metric("Profundidad Promedio", f"{df_raw['Profundidad'].mean():.1f} m")
         
+        # Calcular mínimos y máximos reales para la leyenda
+        min_prof = df_raw['Profundidad'].min()
+        max_prof = df_raw['Profundidad'].max()
+
         # 1. Función de color basada en la Profundidad
         def color_por_profundidad(prof):
             try:
@@ -106,10 +107,9 @@ def BLOQUE002(df_raw, mapbox_key):
                 intensidad = min(255, int(abs(v) * 2.5))
                 return [intensidad, 100, 255 - intensidad, 180]
             except:
-                return [0, 150, 255, 180] # Celeste por defecto si falla
+                return [0, 150, 255, 180]
 
         # 2. Verificamos las columnas de posicionamiento necesarias
-        columnas_requeridas = ['Longitud', 'Latitud', 'Profundidad', 'Cota', 'Altitud']
         if all(col in df_raw.columns for col in ['Longitud', 'Latitud']):
             df_mapa = df_raw.copy()
             df_mapa['color'] = df_mapa['Profundidad'].apply(color_por_profundidad)
@@ -146,28 +146,46 @@ def BLOQUE002(df_raw, mapbox_key):
                     pitch=45
                 ),
                 layers=[
-                    # 💡 CAPA ULTRA ESTABLE: ScatterplotLayer nativa de PyDeck
                     pdk.Layer(
                         "ScatterplotLayer",
                         df_mapa,
                         get_position=["Longitud", "Latitud"],
                         get_fill_color="color",
                         pickable=True,
-                        
-                        # 💡 CONTROL DE TAMAÑO GIGANTE EN PÍXELES (A prueba de fallos)
-                        get_radius=6,          # Subimos el radio a 30 píxeles para que se vea enorme
-                        radius_units="'pixels'", # Forzamos a que use la escala del monitor, no metros terrestres
-                        
-                        # 💡 CAMBIO VISUAL DE DISEÑO (Efecto de contraste fuerte)
+                        get_radius=30,          
+                        radius_units="'pixels'", 
                         linewidth_units="'pixels'",
-                        get_line_width=3,                       # Borde exterior grueso
-                        get_line_color=[255, 255, 255, 255],    # Borde blanco puro (puedes cambiarlo a [0,0,0] para negro)
+                        get_line_width=3,                       
+                        get_line_color=[255, 255, 255, 255],    
                         stroked=True,
                         filled=True
                     )
                 ],
                 tooltip={"html": t_html}
             ))
+
+            # 💡 SOLUCIÓN: BARRA DE COLOR PERSONALIZADA CON HTML/CSS
+            # Este bloque genera el degradado matemático idéntico a tus datos
+            st.markdown(f"""
+                <div style="margin-top: 15px; padding: 10px; border-radius: 5px; background-color: rgba(255,255,255,0.05);">
+                    <p style="margin: 0 0 5px 0; font-size: 14px; font-weight: bold; text-align: center;">
+                        Escala de Profundidad del Pozo (Metros)
+                    </p>
+                    <div style="
+                        height: 18px; 
+                        width: 100%; 
+                        border-radius: 4px;
+                        background: linear-gradient(to right, rgb(0,100,255), rgb(127,100,127), rgb(255,100,0));
+                        box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+                    "></div>
+                    <div style="display: flex; justify-content: space-between; padding: 3px 5px 0 5px; font-size: 12px; font-weight: 500;">
+                        <span>🔹 Somero ({min_prof:.1f} m)</span>
+                        <span>Intermedio</span>
+                        <span>🔸 Profundo ({max_prof:.1f} m)</span>
+                    </div>
+                </div>
+            """, unsafe_allow_html=True)
+
         else:
             st.error("⚠️ Faltan columnas de posicionamiento geográfico (Latitud/Longitud) en el archivo de datos.")
 
