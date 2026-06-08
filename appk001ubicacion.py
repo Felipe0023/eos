@@ -84,6 +84,8 @@ def BLOQUE001(df_raw, tif_bytes):
 
 
 
+
+
 def BLOQUE002(df_raw, mapbox_key):   
     with st.container(border=True):
         st.markdown("<h4 style='text-align: center;'>Monitoreo de Perforaciones</h3>", unsafe_allow_html=True)
@@ -111,25 +113,6 @@ def BLOQUE002(df_raw, mapbox_key):
         if all(col in df_raw.columns for col in ['Longitud', 'Latitud']):
             df_mapa = df_raw.copy()
             df_mapa['color'] = df_mapa['Profundidad'].apply(color_por_profundidad)
-            
-            # 💡 SOLUCIÓN INVISIBLE A PRUEBA DE ERRORES: 
-            # Vector de un ROMBO perfecto codificado en texto puro (Base64 SVG). 
-            # Al no ser una URL externa, ningún servidor lo puede bloquear.
-            ROMBO_SVG = (
-                "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' "
-                "viewBox='0 0 24 24' fill='white'><path d='M12,2L2,12L12,22L22,12L12,2Z'/></svg>"
-            )
-            
-            icon_data = {
-                "url": ROMBO_SVG,
-                "width": 128,
-                "height": 128,
-                "anchorY": 64, 
-                "anchorX": 64, 
-                "mask": True # Permite aplicar tu función de color sobre el rombo
-            }
-            
-            df_mapa["icon_data"] = [icon_data] * len(df_mapa)
                 
             # Tooltip con recuadro formateado
             t_html = """
@@ -163,22 +146,32 @@ def BLOQUE002(df_raw, mapbox_key):
                     pitch=45
                 ),
                 layers=[
+                    # 💡 CAPA ULTRA ESTABLE: ScatterplotLayer nativa de PyDeck
                     pdk.Layer(
-                        "IconLayer",
+                        "ScatterplotLayer",
                         df_mapa,
                         get_position=["Longitud", "Latitud"],
-                        get_icon="icon_data",
-                        get_color="color",
+                        get_fill_color="color",
                         pickable=True,
-                        # 💡 Tamaño de 28 píxeles fijos para que se vea imponente en el mapa
-                        get_size=28,
-                        size_units="'pixels'" 
+                        
+                        # 💡 CONTROL DE TAMAÑO GIGANTE EN PÍXELES (A prueba de fallos)
+                        get_radius=30,          # Subimos el radio a 30 píxeles para que se vea enorme
+                        radius_units="'pixels'", # Forzamos a que use la escala del monitor, no metros terrestres
+                        
+                        # 💡 CAMBIO VISUAL DE DISEÑO (Efecto de contraste fuerte)
+                        linewidth_units="'pixels'",
+                        get_line_width=3,                       # Borde exterior grueso
+                        get_line_color=[255, 255, 255, 255],    # Borde blanco puro (puedes cambiarlo a [0,0,0] para negro)
+                        stroked=True,
+                        filled=True
                     )
                 ],
                 tooltip={"html": t_html}
             ))
         else:
             st.error("⚠️ Faltan columnas de posicionamiento geográfico (Latitud/Longitud) en el archivo de datos.")
+
+
 
 
 
