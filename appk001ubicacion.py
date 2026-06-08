@@ -170,7 +170,7 @@ def BLOQUE002(df_raw, mapbox_key):
                         get_color="color",
                         pickable=True,
                         # 💡 DUPLICADO DE TAMAÑO: Pasó de un equivalente visual de 12 a un tamaño de 24
-                        get_size=4, 
+                        get_size=34, 
                         size_scale=15,
                         size_units="'meters'"
                     )
