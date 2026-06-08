@@ -125,28 +125,33 @@ def BLOQUE003():
         # ==================================================================================================================================
         # 🗺️ MAPA INTERACTIVO 2D CON ESCALA CONTINUA (AZUL A ROJO)
         # ==================================================================================================================================
-        if 'Latitud' in df.columns and 'Longitud' in df.columns:
+        # 💡 CONSEJO: Si usas df_raw en lugar de df, te aseguras de leer las 48 muestras del archivo original
+        df_para_mapa = df_raw.copy() if 'df_raw' in locals() else df.copy()
+
+        if 'Latitud' in df_para_mapa.columns and 'Longitud' in df_para_mapa.columns:
             st.write("---")
             st.markdown("##### 🗺️ Distribución Espacial del Índice DWQI")
             
-            # Buscamos de forma segura la columna identificadora para las etiquetas del mapa
-            columnas_id = [c for c in ['ID', 'Id', 'id', 'Muestra'] if c in df.columns]
-            id_hover = columnas_id[0] if columnas_id else df.columns[0]
+            columnas_id = [c for c in ['ID', 'Id', 'id', 'Muestra'] if c in df_para_mapa.columns]
+            id_hover = columnas_id[0] if columnas_id else df_para_mapa.columns[0]
 
             # Construcción del mapa en 2D interactivo
             fig_mapa = px.scatter_mapbox(
-                df,
+                df_para_mapa, # 💡 Cambiado para usar el DataFrame asegurado
                 lat="Latitud",
                 lon="Longitud",
-                color="DWQI",  # Mapeo numérico para la barra de color continua
-                size=np.repeat(12, len(df)),  # Tamaño visual de los puntos en el mapa
-                color_continuous_scale=["#0000FF", "#3B82F6", "#F59E0B", "#FF0000"], # Escala personalizada: Azul -> Celeste -> Naranja -> Rojo
-                range_color=[0, max(120, df['DWQI'].max())], # Asegurar rango de visualización óptimo
+                color="DWQI",  
+                size=np.repeat(12, len(df_para_mapa)), # 💡 El tamaño ahora se adaptará automáticamente a la longitud exacta (ya sean 9, 48 o más)
+                color_continuous_scale=["#0000FF", "#3B82F6", "#F59E0B", "#FF0000"], 
+                range_color=[0, max(120, df_para_mapa['DWQI'].max())], 
                 hover_name=id_hover,
                 hover_data={"DWQI": ":.2f", "Clasificacion_Calidad": True, "Latitud": False, "Longitud": False},
                 zoom=11,
                 title="Mapeo Geográfico del DWQI"
             )
+
+
+        
 
             # Estilo del mapa de fondo (OpenStreetMap no requiere tokens externos para este gráfico 2D)
             fig_mapa.update_layout(
