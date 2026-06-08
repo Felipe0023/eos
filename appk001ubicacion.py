@@ -82,8 +82,6 @@ def BLOQUE001(df_raw, tif_bytes):
         )
 
 
-
-
 def BLOQUE002(df_raw, mapbox_key):   
     with st.container(border=True):
         st.markdown("<h4 style='text-align: center;'>Monitoreo de Perforaciones</h3>", unsafe_allow_html=True)
@@ -97,7 +95,7 @@ def BLOQUE002(df_raw, mapbox_key):
         with c3: 
             st.metric("Profundidad Promedio", f"{df_raw['Profundidad'].mean():.1f} m")
         
-        # 1. Mantenemos tu función de color basada en la Profundidad
+        # 1. Función de color basada en la Profundidad
         def color_por_profundidad(prof):
             try:
                 v = float(prof)
@@ -112,24 +110,21 @@ def BLOQUE002(df_raw, mapbox_key):
             df_mapa = df_raw.copy()
             df_mapa['color'] = df_mapa['Profundidad'].apply(color_por_profundidad)
             
-            # 💡 CONFIGURACIÓN PARA EL ICONO CUADRADO:
-            # Usamos un archivo SVG/PNG transparente de un cuadrado perfecto
+            # Icono cuadrado base
             ICON_URL = "https://upload.wikimedia.org/wikipedia/commons/d/de/Square_Carbon_Solid.png"
             
-            # Definimos la estructura del icono para PyDeck
             icon_data = {
                 "url": ICON_URL,
                 "width": 128,
                 "height": 128,
-                "anchorY": 64, # Centrado vertical
-                "anchorX": 64, # Centrado horizontal
-                "mask": True   # Permite que PyDeck le pinte encima tu función de colores dinámicos
+                "anchorY": 64, 
+                "anchorX": 64, 
+                "mask": True   
             }
             
-            # Asignamos el diccionario del icono a cada fila del mapa
             df_mapa["icon_data"] = [icon_data] * len(df_mapa)
                 
-            # Tooltip con recuadro formateado solo con las 5 variables requeridas
+            # Tooltip con recuadro formateado
             t_html = """
             <div style="
                 background-color: #ffffff; 
@@ -161,7 +156,6 @@ def BLOQUE002(df_raw, mapbox_key):
                     pitch=45
                 ),
                 layers=[
-                    # 💡 SE CAMBIÓ CAMBIÓ DE "ScatterplotLayer" A "IconLayer"
                     pdk.Layer(
                         "IconLayer",
                         df_mapa,
@@ -169,18 +163,16 @@ def BLOQUE002(df_raw, mapbox_key):
                         get_icon="icon_data",
                         get_color="color",
                         pickable=True,
-                        # 💡 DUPLICADO DE TAMAÑO: Pasó de un equivalente visual de 12 a un tamaño de 24
-                        get_size=34, 
-                        size_scale=45,
-                        size_units="'meters'"
+                        # 💡 SOLUCIÓN: Cambiamos a píxeles fijos en pantalla
+                        # Un tamaño de 24 o 28 píxeles asegura que se vean grandes y claros
+                        get_size=28,
+                        size_units="'pixels'" 
                     )
                 ],
                 tooltip={"html": t_html}
             ))
         else:
             st.error("⚠️ Faltan columnas de posicionamiento geográfico (Latitud/Longitud) en el archivo de datos.")
-
-
 
 
 
