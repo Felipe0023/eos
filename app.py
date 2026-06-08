@@ -22,7 +22,7 @@ import appk001ubicacion
 import appk002zonaestud
 import appk003preproces
 import appk004modelalit
-#import appk005pronoslit 
+import appk005pronoslit 
 #import appk006modlog10k
 #import appk007prolog10k
 #import appk008graficars
