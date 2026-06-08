@@ -1,119 +1,262 @@
 import streamlit as st
-import pandas as pd
 import numpy as np
-import joblib
-import io
+import pandas as pd
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 
-def BLOQUE001(): # _PRONOSTICO LITOLOGICO
-    st.markdown("<h4 style='text-align: center;'>Pronóstico Masivo de Tipo de Roca</h4>", unsafe_allow_html=True)
-    st.info("Procesamiento automatizado del archivo de entrada 'K008_Datos_Nuevos' hacia 'K009_Nuevos_Datos'.")
+# =====================================================================
+# DEFINICIÓN DE LA ARQUITECTURA DE LA RED DE ELMAN
+# =====================================================================
+class ElmanRNN(nn.Module):
+    def __init__(self, input_size=12, hidden_size=144, output_size=1):
+        super(ElmanRNN, self).__init__()
+        self.hidden_size = hidden_size
+        self.rnn = nn.RNN(input_size=input_size, hidden_size=hidden_size, batch_first=True)
+        self.fc = nn.Linear(hidden_size, output_size)
 
-    # 1. VERIFICAR ARTEFACTOS DE IA EN LA SESIÓN
-    requisitos_ia = ['K004_scaler_ml', 'modelo_entrenado_roca', 'label_encoder_roca', 'asignador_hgs_knn']
-    if any(req not in st.session_state for req in requisitos_ia):
-        st.warning("⚠️ Faltan componentes de IA en la memoria del sistema.")
-        st.info("Por favor, ejecuta primero el bloque de entrenamiento unificado (K005) para activar los modelos.")
-        return
+    def forward(self, x):
+        h0 = torch.zeros(1, x.size(0), self.hidden_size).to(x.device)
+        out, hn = self.rnn(x, h0)
+        out = self.fc(out[:, -1, :])
+        return out
 
-    # 2. ESCUDO DE DETECCIÓN EN MEMORIA
-    nombre_clave_detectado = None
-    variantes_nombre = ['K008_Datos_Nuevos', 'K_008_Datos_Nuevos.csv', 'K_008_datos_Nuevos.csv', 'K_008_Datos_Nuevos', 'K_008_datos_Nuevos']
-    
-    for variante in variantes_nombre:
-        if variante in st.session_state and st.session_state[variante] is not None:
-            nombre_clave_detectado = variante
-            break
+# =====================================================================
+# FUNCIONES AUXILIARES DE MODELADO MATEMÁTICO Y MÉTRICAS
+# =====================================================================
+def calcular_metricas(y_true, y_pred):
+    ss_res = np.sum((y_true - y_pred) ** 2)
+    ss_tot = np.sum((y_true - np.mean(y_true)) ** 2)
+    r2 = 1 - (ss_res / ss_tot)
+    nse = r2 
+    rmse = np.sqrt(np.mean((y_true - y_pred) ** 2))
+    mad = np.mean(np.abs(y_true - y_pred))
+    return r2, rmse, mad, nse
 
-    if nombre_clave_detectado is None:
-        st.error("❌ No se encontró el archivo de entrada en la sesión activa.")
-        llaves_existentes = [llave for llave in st.session_state.keys() if '008' in llave or 'Datos' in llave or 'datos' in llave]
-        if llaves_existentes:
-            st.info(f"💡 Variables detectadas en memoria: `{llaves_existentes}`")
-        return
-
-    # Recuperamos los datos de la memoria
-    df_nuevos_original = st.session_state[nombre_clave_detectado].copy()
-    total_registros = len(df_nuevos_original)
-    st.success(f"📊 Dataset de entrada detectado con éxito: `{nombre_clave_detectado}` ({total_registros} registros).")
-
-    cols_requeridas = ['Profundidad', 'Longitud', 'Latitud', 'Altitud', 'Cota']
-    if not all(col in df_nuevos_original.columns for col in cols_requeridas):
-        st.error(f"❌ El archivo en memoria no cuenta con las columnas físicas necesarias: {cols_requeridas}")
-        return
-
-    st.write("**Vista previa de los datos de entrada (Escala Real):**")
-    st.dataframe(df_nuevos_original.head(5), use_container_width=True)
-
-    # --- BOTÓN DE CONTROL DE PROCESAMIENTO MASIVO ---
-    if st.button("🔮 Ejecutar Pronóstico Geológico Masivo", use_container_width=True):
-        df_proc = df_nuevos_original.copy()
-
-        with st.spinner("⏳ Aplicando transformaciones matemáticas e inyectando HGS..."):
-            try:
-                # PASO 1: ESCALAMIENTO GLOBAL
-                scaler_global = st.session_state['K004_scaler_ml']
-                df_proc[cols_requeridas] = scaler_global.transform(df_proc[cols_requeridas])
-
-                # PASO 2: ASIGNACIÓN DE HGS CONSISTENTE
-                asignador_knn = st.session_state['asignador_hgs_knn']
-                cols_coordenadas = ['Profundidad', 'Longitud', 'Latitud', 'Altitud']
-                df_proc['HGS'] = asignador_knn.predict(df_proc[cols_coordenadas])
-                df_proc['HGS'] = df_proc['HGS'].astype(int)
-                
-                # PASO 3: VARIABLE BINARIA DERIVADA
-                df_proc['Es_Zona_Compleja'] = (df_proc['HGS'] == 999).astype(int)
-
-                # PASO 4: ORDENAR MATRIZ X PARA EL MODELO XGBOOST
-                features_modelo = ['Profundidad', 'Longitud', 'Latitud', 'Altitud', 'Cota', 'HGS', 'Es_Zona_Compleja']
-                X_pred = df_proc[features_modelo]
-
-                # PASO 5: CLASIFICACIÓN CON EL MODELO XGBOOST
-                modelo_xgb = st.session_state['modelo_entrenado_roca']
-                predicciones_num = modelo_xgb.predict(X_pred)
-
-                # PASO 6: DESCODIFICACIÓN FINAL A ETIQUETAS LITOLÓGICAS
-                label_encoder = st.session_state['label_encoder_roca']
-                
-                # Mapeamos los resultados estructurales sobre el DataFrame original
-                df_nuevos_original['HGS'] = df_proc['HGS'] 
-                df_nuevos_original['Es_Zona_Compleja'] = df_proc['Es_Zona_Compleja']
-                
-                # 🌟 CORRECCIÓN CRÍTICA: Cambiar 'Tipo_Roca_Predicho' por 'Tipo_Roca' 
-                # para que coincida exactamente con las columnas numéricas/categóricas de K006
-                df_nuevos_original['Tipo_Roca'] = label_encoder.inverse_transform(predicciones_num)
-
-                # 🌟 SOLUCIÓN AL ERROR DE MEMORIA: Guardamos en ambas claves (con y sin extensión)
-                st.session_state['K009_Nuevos_Datos'] = df_nuevos_original
-                st.session_state['K009_Nuevos_Datos.csv'] = df_nuevos_original
-
-                st.success(f"🎉 ¡Pronóstico completado exitosamente! El dataset 'K009_Nuevos_Datos' está listo para el modelo de regresión.")
-                st.rerun() 
-                
-            except Exception as e:
-                st.error(f"❌ Error crítico en la ejecución del pipeline: {e}")
-                return
-
-    # 3. MUESTRA DE RESULTADOS Y EXPORTACIÓN
-    if 'K009_Nuevos_Datos' in st.session_state and st.session_state['K009_Nuevos_Datos'] is not None:
-        df_resultados = st.session_state['K009_Nuevos_Datos']
+def pronosticar_nuevos_datos(modelo_entrenado, escalador_X, escalador_y, datos_nuevos_raw, device):
+    modelo_entrenado.eval() 
+    datos_array = np.array(datos_nuevos_raw, dtype=np.float32)
+    if datos_array.ndim == 1:
+        datos_array = datos_array.reshape(1, -1)
         
-        st.write("**Resultados del Pronóstico (Primeros 10 registros con columna 'Tipo_Roca' unificada):**")
-        st.dataframe(df_resultados.head(10), use_container_width=True)
+    datos_escalados = escalador_X.transform(datos_array)
+    tensor_input = torch.tensor(datos_escalados, dtype=torch.float32).unsqueeze(1).to(device)
+    
+    with torch.no_grad():
+        prediccion_tensor_scaled = modelo_entrenado(tensor_input)
+        
+    dwqi_pronosticado = escalador_y.inverse_transform(prediccion_tensor_scaled.cpu().numpy())
+    return dwqi_pronosticado.flatten()
 
-        # --- PANEL DE DESCARGA ---
-        with st.container(border=True):
-            st.markdown("##### 📥 Exportar Resultados Litológicos")
-            csv_data = df_resultados.to_csv(index=False).encode('utf-8-sig')
+# =====================================================================
+# 🌟 FUNCIÓN PRINCIPAL DEL MÓDULO PARA STREAMLIT
+# =====================================================================
+def MODULO_ENTRENAMIENTO_Y_PRONOSTICO_DWQI():
+    """
+    Función contenedora que ejecuta el entrenamiento de la Elman RNN utilizando 
+    los datos de st.session_state['datos_procesados_DWQI'] y despliega los artefactos 
+    de inferencia manual y masiva en la interfaz.
+    """
+    st.markdown("<h3 style='text-align: center;'>🧠 Modelado de Inteligencia Artificial (Elman RNN)</h3>", unsafe_allow_html=True)
+    
+    # 1. Validación de dependencias y datos de origen upstream
+    if "datos_procesados_DWQI" not in st.session_state or st.session_state["datos_procesados_DWQI"] is None:
+        st.warning("⚠️ No se han encontrado datos analizados previamente. Por favor, calcule el DWQI en el módulo correspondiente antes de proceder al entrenamiento.")
+        return
 
-            st.download_button(
-                label="📄 Descargar Dataset K009_Nuevos_Datos (.csv)",
-                data=csv_data,
-                file_name="K009_Nuevos_Datos.csv", 
-                mime="text/csv",
-                use_container_width=True
-            )
+    # Recuperar datos históricos procesados
+    df_historico = st.session_state["datos_procesados_DWQI"].copy()
 
+    # Asignación dinámica de hardware (CPU / GPU)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    
+    # Lista estricta de las 12 características fisicoquímicas que espera la red neuronal
+    columnas_predictores = ['pH', 'EC', 'TDS', 'Cl-', 'SO42-', 'NO3-', 'Fe', 'Mn', 'Pb', 'Cd', 'As', 'Zn']
+    
+    # Validar que todas las columnas requeridas por el modelo existan en el DataFrame del Session State
+    columnas_faltantes = [col for col in columnas_predictores if col not in df_historico.columns]
+    if columnas_faltantes:
+        st.error(f"❌ Faltan las siguientes columnas esenciales para el entrenamiento en el set de datos: {columnas_faltantes}")
+        return
+        
+    X_datos = df_historico[columnas_predictores].values
+    y_datos = df_historico['DWQI'].values.reshape(-1, 1)
 
+    # 2. Interfaz de Entrenamiento de la Red
+    st.subheader("🏋️ Entrenamiento del Modelo Predictivo")
+    st.info(f"Dispositivo activo para el entrenamiento: `{device.type.upper()}` | Muestras históricas identificadas: `{X_datos.shape[0]}`")
+
+    with st.expander("⚙️ Hiperparámetros de la Elman RNN", expanded=False):
+        lr = st.slider("Tasa de Aprendizaje (Learning Rate)", 0.001, 0.050, 0.005, step=0.001)
+        epochs = st.slider("Épocas de Entrenamiento", 50, 500, 150, step=25)
+        hidden_size = st.slider("Unidades Ocultas (Capa de Contexto)", 32, 256, 144, step=16)
+
+    # Botón para detonar el entrenamiento
+    if st.button("🚀 Entrenar Red Neuronal Recurrente", use_container_width=True):
+        with st.spinner("Procesando datos y ajustando pesos de la red..."):
+            # Fijar semillas para reproducibilidad controlada en Streamlit
+            np.random.seed(42)
+            torch.manual_seed(42)
+
+            # Separación y Escalado de Datos
+            X_train, X_val, y_train, y_val = train_test_split(X_datos, y_datos, test_size=0.30, random_state=42)
+
+            scaler_X = StandardScaler()
+            scaler_y = StandardScaler()
+
+            X_train_scaled = scaler_X.fit_transform(X_train)
+            X_val_scaled = scaler_X.transform(X_val)
+            y_train_scaled = scaler_y.fit_transform(y_train)
+            y_val_scaled = scaler_y.transform(y_val)
+
+            X_train_t = torch.tensor(X_train_scaled, dtype=torch.float32).unsqueeze(1).to(device)
+            y_train_t = torch.tensor(y_train_scaled, dtype=torch.float32).to(device)
+            X_val_t = torch.tensor(X_val_scaled, dtype=torch.float32).unsqueeze(1).to(device)
+            y_val_t = torch.tensor(y_val_scaled, dtype=torch.float32).to(device)
+
+            # Inicializar componentes e instanciar arquitectura de Elman
+            model = ElmanRNN(input_size=12, hidden_size=hidden_size, output_size=1).to(device)
+            criterion = nn.MSELoss()
+            optimizer = optim.Adam(model.parameters(), lr=lr)
+
+            # Contenedor para visualización dinámica del progreso
+            progreso_bar = st.progress(0)
+            status_text = st.empty()
+
+            for epoch in range(epochs):
+                model.train()
+                optimizer.zero_grad()
+                outputs = model(X_train_t)
+                loss_train = criterion(outputs, y_train_t)
+                loss_train.backward()
+                optimizer.step()
+
+                # Actualización de la barra de progreso
+                progreso_bar.progress((epoch + 1) / epochs)
+                if (epoch + 1) % 25 == 0 or epoch == epochs - 1:
+                    model.eval()
+                    with torch.no_grad():
+                        val_outputs = model(X_val_t)
+                        loss_val = criterion(val_outputs, y_val_t)
+                    status_text.text(f"Época [{epoch+1}/{epochs}] -> Loss Train: {loss_train.item():.4f} | Loss Val: {loss_val.item():.4f}")
+
+            # Evaluación Final de Validez Matemática
+            model.eval()
+            with torch.no_grad():
+                pred_train_scaled = model(X_train_t).cpu().numpy()
+                pred_train = scaler_y.inverse_transform(pred_train_scaled).flatten()
+                pred_val_scaled = model(X_val_t).cpu().numpy()
+                pred_val = scaler_y.inverse_transform(pred_val_scaled).flatten()
+
+            r2_tr, rmse_tr, mad_tr, nse_tr = calcular_metricas(y_train.flatten(), pred_train)
+            r2_va, rmse_va, mad_va, nse_va = calcular_metricas(y_val.flatten(), pred_val)
+
+            # Almacenar artefactos entrenados en session_state para que persistan en la app
+            st.session_state["rnn_model_fitted"] = model
+            st.session_state["rnn_scaler_x"] = scaler_X
+            st.session_state["rnn_scaler_y"] = scaler_y
+            
+            st.success("🎉 ¡Modelo entrenado con éxito y guardado en memoria!")
+
+            # Despliegue de la Matriz Comparativa de Validez en Streamlit
+            st.markdown("##### 📊 Matriz Comparativa de Validez")
+            tabla_metricas = pd.DataFrame({
+                "Métrica": ["Coef. Determinación (R²)", "Raíz Error Cuadrático (RMSE)", "Desviación Absoluta Media (MAD)", "Eficiencia Nash-Sutcliffe (NSE)"],
+                "Entrenamiento": [f"{r2_tr:.4f}", f"{rmse_tr:.4f}", f"{mad_tr:.4f}", f"{nse_tr:.4f}"],
+                "Validación": [f"{r2_va:.4f}", f"{rmse_va:.4f}", f"{mad_va:.4f}", f"{nse_va:.4f}"]
+            })
+            st.dataframe(tabla_metricas, use_container_width=True, hide_index=True)
+
+    # 3. Operaciones de Inferencia y Pronóstico con los Modelos Guardados
+    if "rnn_model_fitted" in st.session_state:
+        st.write("---")
+        st.subheader("🔮 Artefactos Operativos de Pronóstico")
+        
+        # Recuperar artefactos entrenados desde el st.session_state
+        model = st.session_state["rnn_model_fitted"]
+        scaler_X = st.session_state["rnn_scaler_x"]
+        scaler_y = st.session_state["rnn_scaler_y"]
+
+        tab1, tab2 = st.tabs(["🕹️ Pronóstico Individual por Muestra", "📂 Pronóstico Masivo mediante Archivo"])
+
+        # ARTEFACTO 1: Inferencia Manual e Individual
+        with tab1:
+            st.markdown("##### Ingrese los parámetros medidos en campo:")
+            col1, col2, col3, col4 = st.columns(4)
+            
+            with col1:
+                p_pH = st.number_input("pH", 0.0, 14.0, 7.2)
+                p_EC = st.number_input("EC (µS/cm)", 0.0, 10000.0, 1200.0)
+                p_TDS = st.number_input("TDS (mg/L)", 0.0, 5000.0, 800.0)
+            with col2:
+                p_Cl = st.number_input("Cl- (mg/L)", 0.0, 1000.0, 45.0)
+                p_SO4 = st.number_input("SO42- (mg/L)", 0.0, 1000.0, 120.0)
+                p_NO3 = st.number_input("NO3- (mg/L)", 0.0, 250.0, 4.2)
+            with col3:
+                p_Fe = st.number_input("Fe (mg/L)", 0.0, 10.0, 0.15)
+                p_Mn = st.number_input("Mn (mg/L)", 0.0, 5.0, 0.02)
+                p_Pb = st.number_input("Pb (mg/L)", 0.0, 2.0, 0.001)
+            with col4:
+                p_Cd = st.number_input("Cd (mg/L)", 0.0, 1.0, 0.0005)
+                p_As = st.number_input("As (mg/L)", 0.0, 2.0, 0.002)
+                p_Zn = st.number_input("Zn (mg/L)", 0.0, 20.0, 1.1)
+
+            if st.button("🔮 Calcular Pronóstico de DWQI Individual", use_container_width=True):
+                vector_crudo = [[p_pH, p_EC, p_TDS, p_Cl, p_SO4, p_NO3, p_Fe, p_Mn, p_Pb, p_Cd, p_As, p_Zn]]
+                resultado = pronosticar_nuevos_datos(model, scaler_X, scaler_y, vector_crudo, device)
+                
+                val_dwqi = resultado[0]
+                if val_dwqi <= 25: estatus, color = "Excelente", "green"
+                elif val_dwqi <= 50: estatus, color = "Buena", "blue"
+                elif val_dwqi <= 75: estatus, color = "Pobre (Regular)", "orange"
+                elif val_dwqi <= 100: estatus, color = "Muy Pobre", "red"
+                else: estatus, color = "No apta para consumo (Inadecuada)", "purple"
+
+                st.markdown(f"""
+                <div style="padding:20px; border-radius:10px; background-color:#f0f2f6; text-align:center;">
+                    <h4>Valor del Índice DWQI Pronosticado: <span style="color:{color}; font-size:30px;">{val_dwqi:.2f}</span></h4>
+                    <h5>Clasificación Estimada: <span style="color:{color};">{estatus}</span></h5>
+                </div>
+                """, unsafe_allow_html=True)
+
+        # ARTEFACTO 2: Inferencia Batch (Lotes Masivos por CSV)
+        with tab2:
+            st.markdown("##### Suba un nuevo archivo CSV para pronosticar múltiples pozos simultáneamente:")
+            st.caption("El archivo cargado debe contener obligatoriamente las 12 columnas hidroquímicas indicadas arriba.")
+            
+            archivo_pronostico = st.file_uploader("Subir CSV de Nuevos Datos", type=["csv"], key="uploader_batch_rnn")
+            
+            if archivo_pronostico is not None:
+                df_nuevos_datos = pd.read_csv(archivo_pronostico)
+                df_nuevos_datos.columns = df_nuevos_datos.columns.str.strip()
+                
+                # Validar columnas antes de alimentar a la red
+                faltan_batch = [c for c in columnas_predictores if c not in df_nuevos_datos.columns]
+                
+                if faltan_batch:
+                    st.error(f"❌ Estructura de archivo incorrecta. Faltan las columnas: {faltan_batch}")
+                else:
+                    if st.button("🔮 Procesar Pronóstico Masivo de Lote", use_container_width=True):
+                        matrix_raw = df_nuevos_datos[columnas_predictores].values
+                        pronosticos_lote = pronosticar_nuevos_datos(model, scaler_X, scaler_y, matrix_raw, device)
+                        
+                        # Guardar predicciones en el DataFrame y mostrar resultados
+                        df_nuevos_datos['DWQI_Pronosticado_RNN'] = pronosticos_lote
+                        
+                        st.success(f"✅ Procesamiento completado. Se generaron {len(df_nuevos_datos)} pronósticos.")
+                        st.dataframe(df_nuevos_datos, use_container_width=True)
+                        
+                        # Habilitar descarga inmediata de los datos procesados por la IA
+                        csv_descarga = df_nuevos_datos.to_csv(index=False).encode('utf-8')
+                        st.download_button(
+                            label="📥 Descargar Respuestas del Pronóstico (CSV)",
+                            data=csv_descarga,
+                            file_name="pronosticos_DWQI_AI.csv",
+                            mime="text/csv",
+                            use_container_width=True
+                        )
 
 
 
