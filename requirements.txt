@@ -11,3 +11,6 @@ scikit-learn
 xgboost
 statsmodels
 shap
+torch
+requests
+pydeck
