@@ -110,7 +110,29 @@ def BLOQUE002(df_raw, mapbox_key):
         if all(col in df_raw.columns for col in ['Longitud', 'Latitud']):
             df_mapa = df_raw.copy()
             df_mapa['color'] = df_mapa['Profundidad'].apply(color_por_profundidad)
-                
+
+            # 💡 SOLUCIÓN INVISIBLE A PRUEBA DE ERRORES: 
+            # Vector de un ROMBO perfecto codificado en texto puro (Base64 SVG). 
+            # Al no ser una URL externa, ningún servidor lo puede bloquear.
+            ROMBO_SVG = (
+                "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' "
+                "viewBox='0 0 24 24' fill='white'><path d='M12,2L2,12L12,22L22,12L12,2Z'/></svg>"
+            )
+            
+            icon_data = {
+                "url": ROMBO_SVG,
+                "width": 128,
+                "height": 128,
+                "anchorY": 64, 
+                "anchorX": 64, 
+                "mask": True # Permite aplicar tu función de color sobre el rombo
+            }
+            
+            df_mapa["icon_data"] = [icon_data] * len(df_mapa)
+
+
+
+            
             # Tooltip con recuadro formateado
             t_html = """
             <div style="
