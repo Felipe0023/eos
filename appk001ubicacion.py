@@ -152,7 +152,7 @@ def BLOQUE002(df_raw, mapbox_key):
                         get_position=["Longitud", "Latitud"],
                         get_fill_color="color",
                         pickable=True,
-                        get_radius=30,          
+                        get_radius= 6,          
                         radius_units="'pixels'", 
                         linewidth_units="'pixels'",
                         get_line_width=3,                       
