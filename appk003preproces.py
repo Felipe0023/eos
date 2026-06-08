@@ -86,6 +86,9 @@ def BLOQUE003():
 
         # 🌟 CRÍTICO: Guardar los nuevos cálculos de vuelta en el session_state original 
         st.session_state["K001_datos"] = df
+        
+        # 🌟 NUEVO ARTEFACTO: Guardar la matriz procesada específicamente en "datos_procesados_DWQI"
+        st.session_state["datos_procesados_DWQI"] = df
 
         # ==================================================================================================================================
         # DESPLEGUE EN INTERFAZ GRÁFICA DE STREAMLIT
@@ -120,7 +123,7 @@ def BLOQUE003():
         st.plotly_chart(fig, use_container_width=True)
 
         # ==================================================================================================================================
-        # 🗺️ NUEVO: MAPA INTERACTIVO 2D CON ESCALA CONTINUA (AZUL A ROJO)
+        # 🗺️ MAPA INTERACTIVO 2D CON ESCALA CONTINUA (AZUL A ROJO)
         # ==================================================================================================================================
         if 'Latitud' in df.columns and 'Longitud' in df.columns:
             st.write("---")
@@ -145,9 +148,6 @@ def BLOQUE003():
                 title="Mapeo Geográfico del DWQI"
             )
 
-
-
-            
             # Estilo del mapa de fondo (OpenStreetMap no requiere tokens externos para este gráfico 2D)
             fig_mapa.update_layout(
                 mapbox=dict(
@@ -164,8 +164,6 @@ def BLOQUE003():
             
             # Asegurar que la configuración de Plotly ignore tokens globales
             st.plotly_chart(fig_mapa, use_container_width=True, config={'mapboxAccessToken': ''})
-
-
         
         else:
             st.info("ℹ️ Para visualizar el mapa espacial 2D, el set de datos debe contener las columnas 'Latitud' y 'Longitud'.")
