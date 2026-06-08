@@ -165,22 +165,20 @@ def BLOQUE002(df_raw, mapbox_key):
                     pitch=45
                 ),
                 layers=[
-                    # 💡 SOLUCIÓN 100% SEGURA: Volvemos a ScatterplotLayer nativo de PyDeck
                     pdk.Layer(
-                        "ScatterplotLayer",
+                        "IconLayer",
                         df_mapa,
                         get_position=["Longitud", "Latitud"],
-                        get_fill_color="color",
+                        get_icon="icon_data",
+                        get_color="color",
                         pickable=True,
-                        # 💡 CONFIGURACIÓN DE TAMAÑO GIGANTE EN PÍXELES:
-                        get_radius=9,          # Un radio de 15 píxeles es bastante grande en pantalla
-                        radius_units="'pixels'", # ⚠️ CLAVE: Forzamos a que sean píxeles fijos, NUNCA desaparecerá con el zoom
-                        linewidth_units="'pixels'",
-                        get_line_width=1,
-                        get_line_color=[255, 255, 255, 255] # Borde blanco para resaltar
+                        # 💡 Tamaño de 28 píxeles fijos para que se vea imponente en el mapa
+                        get_size=28,
+                        size_units="'pixels'" 
                     )
                 ],
                 tooltip={"html": t_html}
+               
             ))
         else:
             st.error("⚠️ Faltan columnas de posicionamiento geográfico (Latitud/Longitud) en el archivo de datos.")
