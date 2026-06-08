@@ -82,6 +82,7 @@ def BLOQUE001(df_raw, tif_bytes):
         )
 
 
+
 def BLOQUE002(df_raw, mapbox_key):   
     with st.container(border=True):
         st.markdown("<h4 style='text-align: center;'>Monitoreo de Perforaciones</h3>", unsafe_allow_html=True)
@@ -109,20 +110,6 @@ def BLOQUE002(df_raw, mapbox_key):
         if all(col in df_raw.columns for col in ['Longitud', 'Latitud']):
             df_mapa = df_raw.copy()
             df_mapa['color'] = df_mapa['Profundidad'].apply(color_por_profundidad)
-            
-            # Icono cuadrado base
-            ICON_URL = "https://upload.wikimedia.org/wikipedia/commons/d/de/Square_Carbon_Solid.png"
-            
-            icon_data = {
-                "url": ICON_URL,
-                "width": 128,
-                "height": 128,
-                "anchorY": 64, 
-                "anchorX": 64, 
-                "mask": True   
-            }
-            
-            df_mapa["icon_data"] = [icon_data] * len(df_mapa)
                 
             # Tooltip con recuadro formateado
             t_html = """
@@ -156,23 +143,27 @@ def BLOQUE002(df_raw, mapbox_key):
                     pitch=45
                 ),
                 layers=[
+                    # 💡 SOLUCIÓN 100% SEGURA: Volvemos a ScatterplotLayer nativo de PyDeck
                     pdk.Layer(
-                        "IconLayer",
+                        "ScatterplotLayer",
                         df_mapa,
                         get_position=["Longitud", "Latitud"],
-                        get_icon="icon_data",
-                        get_color="color",
+                        get_fill_color="color",
                         pickable=True,
-                        # 💡 SOLUCIÓN: Cambiamos a píxeles fijos en pantalla
-                        # Un tamaño de 24 o 28 píxeles asegura que se vean grandes y claros
-                        get_size=28,
-                        size_units="'pixels'" 
+                        # 💡 CONFIGURACIÓN DE TAMAÑO GIGANTE EN PÍXELES:
+                        get_radius=15,          # Un radio de 15 píxeles es bastante grande en pantalla
+                        radius_units="'pixels'", # ⚠️ CLAVE: Forzamos a que sean píxeles fijos, NUNCA desaparecerá con el zoom
+                        linewidth_units="'pixels'",
+                        get_line_width=1,
+                        get_line_color=[255, 255, 255, 255] # Borde blanco para resaltar
                     )
                 ],
                 tooltip={"html": t_html}
             ))
         else:
             st.error("⚠️ Faltan columnas de posicionamiento geográfico (Latitud/Longitud) en el archivo de datos.")
+
+
 
 
 
