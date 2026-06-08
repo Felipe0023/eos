@@ -151,7 +151,7 @@ def BLOQUE002(df_raw, mapbox_key):
                         get_fill_color="color",
                         pickable=True,
                         # 💡 CONFIGURACIÓN DE TAMAÑO GIGANTE EN PÍXELES:
-                        get_radius=5,          # Un radio de 15 píxeles es bastante grande en pantalla
+                        get_radius=9,          # Un radio de 15 píxeles es bastante grande en pantalla
                         radius_units="'pixels'", # ⚠️ CLAVE: Forzamos a que sean píxeles fijos, NUNCA desaparecerá con el zoom
                         linewidth_units="'pixels'",
                         get_line_width=1,
