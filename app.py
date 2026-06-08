@@ -22,7 +22,7 @@ import base64
 # IMPORTACIÓN DE MÓDULOS DEL ECOSISTEMA
 # ==========================================================================================================================================
 import appk001ubicacion
-import appk002zonaestud
+#import appk002zonaestud
 import appk003preproces
 import appk004modelalit
 import appk005pronoslit  # 🧠 Aquí reside tu código de la Red Neuronal Recurrente Elman
@@ -246,8 +246,8 @@ else:
             appk001ubicacion.BLOQUE002(K001_datos, mapbox_key) 
             appk001ubicacion.BLOQUE003(K001_datos, K001_dem, submuestreo=5)
             
-        with tabs[1]: 
-            appk002zonaestud.BLOQUE001(K001_dem) 
+        #with tabs[1]: 
+        #   appk002zonaestud.BLOQUE001(K001_dem) 
             
         with tabs[2]: # Preprocesamiento (Aquí se genera st.session_state["datos_procesados_DWQI"])
             appk003preproces.BLOQUE003() 
