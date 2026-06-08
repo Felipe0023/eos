@@ -52,7 +52,7 @@ def BLOQUE001(df_raw, tif_bytes):
             x=df_raw['Longitud'], 
             y=df_raw['Latitud'], 
             mode='markers', 
-            marker=dict(color='red', size=8, line=dict(width=1, color='white')),
+            marker=dict(color='red', size=16, line=dict(width=1, color='white')),
             name='Perforaciones'
         ))
 
