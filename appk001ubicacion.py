@@ -83,6 +83,7 @@ def BLOQUE001(df_raw, tif_bytes):
 
 
 
+
 def BLOQUE002(df_raw, mapbox_key):   
     with st.container(border=True):
         st.markdown("<h4 style='text-align: center;'>Monitoreo de Perforaciones</h3>", unsafe_allow_html=True)
@@ -110,7 +111,7 @@ def BLOQUE002(df_raw, mapbox_key):
         if all(col in df_raw.columns for col in ['Longitud', 'Latitud']):
             df_mapa = df_raw.copy()
             df_mapa['color'] = df_mapa['Profundidad'].apply(color_por_profundidad)
-
+            
             # 💡 SOLUCIÓN INVISIBLE A PRUEBA DE ERRORES: 
             # Vector de un ROMBO perfecto codificado en texto puro (Base64 SVG). 
             # Al no ser una URL externa, ningún servidor lo puede bloquear.
@@ -129,10 +130,7 @@ def BLOQUE002(df_raw, mapbox_key):
             }
             
             df_mapa["icon_data"] = [icon_data] * len(df_mapa)
-
-
-
-            
+                
             # Tooltip con recuadro formateado
             t_html = """
             <div style="
@@ -178,10 +176,10 @@ def BLOQUE002(df_raw, mapbox_key):
                     )
                 ],
                 tooltip={"html": t_html}
-               
             ))
         else:
             st.error("⚠️ Faltan columnas de posicionamiento geográfico (Latitud/Longitud) en el archivo de datos.")
+
 
 
 
