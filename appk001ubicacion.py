@@ -155,7 +155,7 @@ def BLOQUE002(df_raw, mapbox_key):
                         pickable=True,
                         
                         # 💡 CONTROL DE TAMAÑO GIGANTE EN PÍXELES (A prueba de fallos)
-                        get_radius=10,          # Subimos el radio a 30 píxeles para que se vea enorme
+                        get_radius=8,          # Subimos el radio a 30 píxeles para que se vea enorme
                         radius_units="'pixels'", # Forzamos a que use la escala del monitor, no metros terrestres
                         
                         # 💡 CAMBIO VISUAL DE DISEÑO (Efecto de contraste fuerte)
