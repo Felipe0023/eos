@@ -18,14 +18,14 @@ import os
 import sys
 import base64
 
+# ==========================================================================================================================================
+# IMPORTACIÓN DE MÓDULOS DEL ECOSISTEMA
+# ==========================================================================================================================================
 import appk001ubicacion
 import appk002zonaestud
 import appk003preproces
 import appk004modelalit
-import appk005pronoslit 
-#import appk006modlog10k
-#import appk007prolog10k
-#import appk008graficars
+import appk005pronoslit  # 🧠 Aquí reside tu código de la Red Neuronal Recurrente Elman
 
 # ==========================================================================================================================================
 # CONFIGURACIÓN DE LA PÁGINA (Única declaración global)
@@ -175,7 +175,6 @@ with st.sidebar:
         st.rerun()
         
     with st.form("formulario_carga"):
-        # 1️⃣ SUPERIOR: Logo Licenciado
         if logo_nuevo_cache is not None:
             col_lic_1, col_lic_2, col_lic_3 = st.columns([1, 5, 1])
             with col_lic_2:
@@ -188,7 +187,6 @@ with st.sidebar:
         archivo_tif = st.file_uploader("Arrastra y suelta o click para subir archivos TIF", type=["tif", "tiff"])
         boton_procesar = st.form_submit_button("Procesar datos")
         
-        # 2️⃣ INFERIOR: Logo Nereus
         if logo_nereus2_cache is not None:
             st.markdown("<br>", unsafe_allow_html=True)
             col_side_1, col_side_2, col_side_3 = st.columns([1, 6, 1])
@@ -231,7 +229,6 @@ K001_datos = st.session_state["K001_datos"]
 # ==========================================================================================================================================
 st.markdown("<br>", unsafe_allow_html=True)
 
-# Si los archivos aún no están listos, muestra la advertencia en el tope absoluto del cuerpo
 if not ambos_archivos_listos:
     st.markdown("<h4 style='text-align: center; color: #555;'>💡 Por favor, en la barra lateral izquierda cargar los archivos CSV y TIF y presionar 'PROCESAR DATOS'.</h4>", unsafe_allow_html=True)
 else:
@@ -242,29 +239,27 @@ else:
 
         tabs = st.tabs([
             "Ubicación", "Zona de Pronóstico", "Preprocesamiento", 
-            "Modelamiento Litológico", "Pronóstico Litológico",  
-            "Modelamiento de Log10 K", "Pronóstico Log10 K",  
-            "Gráfico 3D"
+            "Modelamiento Litológico", "Pronóstico DWQI (RNN)", "Gráfico 3D"
         ])
         
         with tabs[0]: 
-            #appk001ubicacion.BLOQUE001(K001_datos, K001_dem)
             appk001ubicacion.BLOQUE002(K001_datos, mapbox_key) 
             appk001ubicacion.BLOQUE003(K001_datos, K001_dem, submuestreo=5)
             
         with tabs[1]: 
             appk002zonaestud.BLOQUE001(K001_dem) 
             
-        with tabs[2]: # Preprocesamiento
-            #appk003preproces.BLOQUE001() 
-            #appk003preproces.BLOQUE002() 
+        with tabs[2]: # Preprocesamiento (Aquí se genera st.session_state["datos_procesados_DWQI"])
             appk003preproces.BLOQUE003() 
 
         with tabs[3]: # Modelamiento Litológico
             appk004modelalit.BLOQUE004() 
 
+        with tabs[4]: # 🧠 PRONÓSTICO DWQI UTILIZANDO LA RED NEURONAL RECURRENTE (ELMAN RNN)
+            appk005pronoslit.MODULO_ENTRENAMIENTO_Y_PRONOSTICO_DWQI()
+            
+        with tabs[5]: # Gráfico 3D
+            st.info("Visualización del espacio tridimensional.")
 
-            
-            
 
 
