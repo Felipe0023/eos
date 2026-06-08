@@ -167,10 +167,12 @@ def BLOQUE002(df_raw, mapbox_key):
                         df_mapa,
                         get_position=["Longitud", "Latitud"],
                         get_icon="icon_data",
-                        # 💡 DUPLICADO DE TAMAÑO: Pasó de un equivalente visual de 12 a un tamaño de 24
-                        get_size=24, 
                         get_color="color",
-                        pickable=True
+                        pickable=True,
+                        # 💡 DUPLICADO DE TAMAÑO: Pasó de un equivalente visual de 12 a un tamaño de 24
+                        get_size=4, 
+                        size_scale=15,
+                        size_units="'meters'"
                     )
                 ],
                 tooltip={"html": t_html}
