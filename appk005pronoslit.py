@@ -57,7 +57,7 @@ def MODULO_ENTRENAMIENTO_Y_PRONOSTICO_DWQI():
     """
     Función contenedora que ejecuta el entrenamiento de la Elman RNN utilizando 
     las 15 variables químicas y 5 físicas (20 predictores totales) basándose en 
-    st.session_state['datos_procesados_DWQI'].
+    st.session_state['datos_procesados_DWQI']. Incluye imputación robusta por la media.
     """
     st.markdown("<h3 style='text-align: center;'>🧠 Modelado de Inteligencia Artificial (Elman RNN)</h3>", unsafe_allow_html=True)
     
@@ -72,17 +72,23 @@ def MODULO_ENTRENAMIENTO_Y_PRONOSTICO_DWQI():
     # Asignación dinámica de hardware (CPU / GPU)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
-    # 💡 NUEVA CONDICIÓN: Matriz extendida a 20 características (15 Hidroquímicas + 5 Físico-Estructurales)
+    # 💡 Matriz de 20 características (15 Hidroquímicas + 5 Físico-Estructurales)
     columnas_predictores = [
         'pH', 'EC', 'TDS', 'Cl-', 'SO42-', 'NO3-', 'Fe', 'Mn', 'Pb', 'Cd', 'As', 'Zn', 'Cu', 'Al', 'Cr',
         'Profundidad', 'Longitud', 'Latitud', 'Altitud', 'Cota'
     ]
     
-    # Validar que todas las columnas requeridas por el modelo existan en el DataFrame del Session State
+    # Validar que todas las columnas requeridas existan antes de operar
     columnas_faltantes = [col for col in columnas_predictores if col not in df_historico.columns]
     if columnas_faltantes:
         st.error(f"❌ Estructura incompleta. Faltan las siguientes columnas esenciales para el entrenamiento: {columnas_faltantes}")
         return
+    
+    # 🛠️ [OPCIÓN A INTEGRADA - ENTRENAMIENTO]: Imputación por la media histórica
+    # Rellena cualquier celda vacía o NaN en el histórico con el promedio de su respectiva columna
+    if df_historico[columnas_predictores].isnull().sum().sum() > 0:
+        df_historico[columnas_predictores] = df_historico[columnas_predictores].fillna(df_historico[columnas_predictores].mean())
+        st.info("ℹ️ Se detectaron y corrigieron automáticamente valores nulos en el set histórico mediante imputación por la media.")
         
     X_datos = df_historico[columnas_predictores].values
     y_datos = df_historico['DWQI'].values.reshape(-1, 1)
@@ -99,7 +105,6 @@ def MODULO_ENTRENAMIENTO_Y_PRONOSTICO_DWQI():
     # Botón para detonar el entrenamiento
     if st.button("🚀 Entrenar Red Neuronal Recurrente", use_container_width=True):
         with st.spinner("Procesando datos y ajustando pesos de la red de 20 entradas..."):
-            # Fijar semillas para reproducibilidad controlada en Streamlit
             np.random.seed(42)
             torch.manual_seed(42)
 
@@ -119,12 +124,11 @@ def MODULO_ENTRENAMIENTO_Y_PRONOSTICO_DWQI():
             X_val_t = torch.tensor(X_val_scaled, dtype=torch.float32).unsqueeze(1).to(device)
             y_val_t = torch.tensor(y_val_scaled, dtype=torch.float32).to(device)
 
-            # Inicializar componentes e instanciar arquitectura de Elman con input_size=20
+            # Inicializar componentes
             model = ElmanRNN(input_size=20, hidden_size=hidden_size, output_size=1).to(device)
             criterion = nn.MSELoss()
             optimizer = optim.Adam(model.parameters(), lr=lr)
 
-            # Contenedor para visualización dinámica del progreso
             progreso_bar = st.progress(0)
             status_text = st.empty()
 
@@ -136,7 +140,6 @@ def MODULO_ENTRENAMIENTO_Y_PRONOSTICO_DWQI():
                 loss_train.backward()
                 optimizer.step()
 
-                # Actualización de la barra de progreso
                 progreso_bar.progress((epoch + 1) / epochs)
                 if (epoch + 1) % 25 == 0 or epoch == epochs - 1:
                     model.eval()
@@ -156,14 +159,12 @@ def MODULO_ENTRENAMIENTO_Y_PRONOSTICO_DWQI():
             r2_tr, rmse_tr, mad_tr, nse_tr = calcular_metricas(y_train.flatten(), pred_train)
             r2_va, rmse_va, mad_va, nse_va = calcular_metricas(y_val.flatten(), pred_val)
 
-            # Almacenar artefactos entrenados en session_state para que persistan en la app
             st.session_state["rnn_model_fitted"] = model
             st.session_state["rnn_scaler_x"] = scaler_X
             st.session_state["rnn_scaler_y"] = scaler_y
             
             st.success("🎉 ¡Modelo adaptado de 20 variables entrenado con éxito y guardado!")
 
-            # Despliegue de la Matriz Comparativa de Validez en Streamlit
             st.markdown("##### 📊 Matriz Comparativa de Validez")
             tabla_metricas = pd.DataFrame({
                 "Métrica": ["Coef. Determinación (R²)", "Raíz Error Cuadrático (RMSE)", "Desviación Absoluta Media (MAD)", "Eficiencia Nash-Sutcliffe (NSE)"],
@@ -172,19 +173,17 @@ def MODULO_ENTRENAMIENTO_Y_PRONOSTICO_DWQI():
             })
             st.dataframe(tabla_metricas, use_container_width=True, hide_index=True)
 
-    # 3. Operaciones de Inferencia y Pronóstico con los Modelos Guardados
+    # 3. Operaciones de Inferencia y Pronóstico
     if "rnn_model_fitted" in st.session_state:
         st.write("---")
         st.subheader("🔮 Artefactos Operativos de Pronóstico")
         
-        # Recuperar artefactos entrenados desde el st.session_state
         model = st.session_state["rnn_model_fitted"]
         scaler_X = st.session_state["rnn_scaler_x"]
         scaler_y = st.session_state["rnn_scaler_y"]
 
         tab1, tab2 = st.tabs(["🕹️ Pronóstico Individual por Muestra", "📂 Pronóstico Masivo mediante Archivo"])
 
-        # ARTEFACTO 1: Inferencia Manual e Individual (Adaptada a las 20 variables)
         with tab1:
             st.markdown("##### Ingrese los parámetros fisicoquímicos y geográficos:")
             col1, col2, col3, col4 = st.columns(4)
@@ -208,7 +207,6 @@ def MODULO_ENTRENAMIENTO_Y_PRONOSTICO_DWQI():
                 p_Al = st.number_input("Al (mg/L)", 0.0, 5.0, 0.08)
                 p_Cr = st.number_input("Cr (mg/L)", 0.0, 2.0, 0.005)
             with col4:
-                # 💡 VARIABLES NUEVAS INYECTADAS A LA INTERFAZ MANUAL
                 p_Prof = st.number_input("Profundidad (m)", 0.0, 500.0, 45.0)
                 p_Long = st.number_input("Longitud (X)", -180.0, 180.0, -75.0)
                 p_Lat = st.number_input("Latitud (Y)", -90.0, 90.0, -12.0)
@@ -216,7 +214,6 @@ def MODULO_ENTRENAMIENTO_Y_PRONOSTICO_DWQI():
                 p_Cota = st.number_input("Cota Terreno", -100.0, 5000.0, 148.0)
 
             if st.button("🔮 Calcular Pronóstico de DWQI Individual", use_container_width=True):
-                # Construcción del vector respetando el orden estricto de columnas_predictores
                 vector_crudo = [[
                     p_pH, p_EC, p_TDS, p_Cl, p_SO4, p_NO3, p_Fe, p_Mn, p_Pb, p_Cd, p_As, p_Zn, p_Cu, p_Al, p_Cr,
                     p_Prof, p_Long, p_Lat, p_Alt, p_Cota
@@ -237,10 +234,9 @@ def MODULO_ENTRENAMIENTO_Y_PRONOSTICO_DWQI():
                 </div>
                 """, unsafe_allow_html=True)
 
-        # ARTEFACTO 2: Inferencia Batch (Lotes Masivos por CSV)
         with tab2:
             st.markdown("##### Suba un nuevo archivo CSV para pronosticar múltiples pozos simultáneamente:")
-            st.caption("El archivo cargado debe contener obligatoriamente los 15 parámetros químicos y las 5 variables físicas solicitadas.")
+            st.caption("El archivo cargado debe contener los 15 parámetros químicos y las 5 variables físicas solicitadas.")
             
             archivo_pronostico = st.file_uploader("Subir CSV de Nuevos Datos", type=["csv"], key="uploader_batch_rnn")
             
@@ -248,23 +244,27 @@ def MODULO_ENTRENAMIENTO_Y_PRONOSTICO_DWQI():
                 df_nuevos_datos = pd.read_csv(archivo_pronostico)
                 df_nuevos_datos.columns = df_nuevos_datos.columns.str.strip()
                 
-                # Validar la presencia de las 20 columnas antes de alimentar a la traza de evaluación de PyTorch
                 faltan_batch = [c for c in columnas_predictores if c not in df_nuevos_datos.columns]
                 
                 if faltan_batch:
                     st.error(f"❌ Estructura de archivo incorrecta. El modelo de 20 variables no encuentra: {faltan_batch}")
                 else:
                     if st.button("🔮 Procesar Pronóstico Masivo de Lote", use_container_width=True):
+                        
+                        # 🛠️ [OPCIÓN A INTEGRADA - INFERENCIA BATCH]: Imputación por la media
+                        # Detecta si el archivo cargado contiene celdas vacías y las rellena con el promedio de esa columna
+                        if df_nuevos_datos[columnas_predictores].isnull().sum().sum() > 0:
+                            df_nuevos_datos[columnas_predictores] = df_nuevos_datos[columnas_predictores].fillna(df_nuevos_datos[columnas_predictores].mean())
+                            st.info("ℹ️ Se detectaron celdas vacías en el archivo cargado. Se aplicó una imputación automática por la media del lote para poder calcular los pronósticos.")
+
                         matrix_raw = df_nuevos_datos[columnas_predictores].values
                         pronosticos_lote = pronosticar_nuevos_datos(model, scaler_X, scaler_y, matrix_raw, device)
                         
-                        # Guardar predicciones en el DataFrame y mostrar resultados
                         df_nuevos_datos['DWQI_Pronosticado_RNN'] = pronosticos_lote
                         
                         st.success(f"✅ Procesamiento completado. Se generaron {len(df_nuevos_datos)} pronósticos con la matriz expandida.")
                         st.dataframe(df_nuevos_datos, use_container_width=True)
                         
-                        # Habilitar descarga inmediata de los datos procesados por la IA
                         csv_descarga = df_nuevos_datos.to_csv(index=False).encode('utf-8')
                         st.download_button(
                             label="📥 Descargar Respuestas del Pronóstico (CSV)",
