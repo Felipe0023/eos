@@ -182,6 +182,8 @@ def BLOQUE003():
                 )
             )
                 
+            # 💡 AQUÍ ESTÁ EL CAMBIO: Agrega esta línea para forzar el doble de tamaño visual en la pantalla
+            fig_mapa.update_traces(marker=dict(size=32))
             
             # Asegurar que la configuración de Plotly ignore tokens globales
             st.plotly_chart(fig_mapa, use_container_width=True, config={'mapboxAccessToken': ''})
