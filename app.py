@@ -30,6 +30,7 @@ import app005hpi
 import app006mi
 import app007cd
 import app008hiadulto
+import app009hinino
 
 # ==========================================================================================================================================
 # CONFIGURACIÓN DE LA PÁGINA (Única declaración global)
