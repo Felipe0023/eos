@@ -27,6 +27,7 @@ import appk003preproces
 import appk004modelalit
 import appk005pronoslit  # 🧠 Aquí reside tu código de la Red Neuronal Recurrente Elman
 import app005hpi
+import app006mi
 
 # ==========================================================================================================================================
 # CONFIGURACIÓN DE LA PÁGINA (Única declaración global)
@@ -240,7 +241,7 @@ else:
 
         tabs = st.tabs([
             "Ubicación",  "DWQI", 
-            "HPI/MI/Cd/HI", "Pronóstico DWQI", "Pronóstico HPI"
+            "HPI/MI/Cd/HI", "Pronóstico DWQI", "Pronóstico HPI", "Pronóstico MI"
         ])
         
         with tabs[0]: #Ubicación
@@ -259,8 +260,10 @@ else:
             appk005pronoslit.MODULO_ENTRENAMIENTO_Y_PRONOSTICO_DWQI()
             
         with tabs[4]: # Pronóstico HPI
-            st.info("Visualización del espacio tridimensional.")
             app005hpi.MODULO_ENTRENAMIENTO_Y_PRONOSTICO_HPI()
+
+        with tabs[5]: # Pronóstico MI
+            app006mi.MODULO_ENTRENAMIENTO_Y_PRONOSTICO_MI()
 
 
 
