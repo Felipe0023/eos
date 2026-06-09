@@ -20,21 +20,21 @@ def BLOQUE003():
 
         # 3. Definir los Estándares de Referencia (Si), Pesos (wi) y Valores Ideales (Vi)
         parametros_calidad = {
-            'pH': (8.5, 4, 7.0),
-            'EC': (1500.0, 3, 0.0),
-            'TDS': (1000.0, 3, 0.0),
+            'pH': (8.5, 2, 7.0),
+            'EC': (1600.0, 2, 0.0),
+            'TDS': (1000.0, 2, 0.0),
             'Cl-': (250.0, 3, 0.0),
             'SO42-': (250.0, 3, 0.0),
             'NO3-': (50.0, 5, 0.0),
-            'Fe': (0.3, 4, 0.0),
+            'Fe': (0.3, 3, 0.0),
             'Mn': (0.1, 4, 0.0),
             'Pb': (0.01, 5, 0.0),
             'Cd': (0.003, 5, 0.0),
             'As': (0.01, 5, 0.0),
-            'Zn': (3.0, 2, 0.0),
-            'Cu': (2.0, 2, 0.0),
+            'Zn': (3.0, 1, 0.0),
+            'Cu': (1.0, 2, 0.0),
             'Al': (0.2, 3, 0.0),
-            'Cr': (0.05, 5, 0.0)
+            'Cr': (0.05, 4, 0.0)
         }
 
         # Filtrar solo los parámetros que realmente existen en el DataFrame
