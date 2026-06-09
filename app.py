@@ -243,7 +243,7 @@ else:
 
         tabs = st.tabs([
             "Ubicación",  "DWQI", 
-            "HPI/MI/Cd/HI", "Pronóstico DWQI", "Pronóstico HPI", "Pronóstico MI", "Pronóstico Cd", "Pronóstico HI Adulto"
+            "HPI/MI/Cd/HI", "Pronóstico DWQI", "Pronóstico HPI", "Pronóstico MI", "Pronóstico Cd", "Pronóstico HI Adulto", "Pronóstico HI Niño"
         ])
         
         with tabs[0]: #Ubicación
@@ -266,6 +266,13 @@ else:
             app007cd.MODULO_ENTRENAMIENTO_Y_PRONOSTICO_CD_INDEX()
         with tabs[7]: # Pronóstico HI Adulto
             app008hiadulto.MODULO_ENTRENAMIENTO_Y_PRONOSTICO_HI_ADULTO()
+        with tabs[8]: # Pronóstico HI Nino
+            app008hinino.MODULO_ENTRENAMIENTO_Y_PRONOSTICO_HI_NINO()    
+
+
+
+
+
 
 
 
