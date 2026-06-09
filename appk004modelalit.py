@@ -226,7 +226,7 @@ def BLOQUE004():
         st.write("---")
         st.markdown("##### 📋 Matriz de Resultados de Evaluación Ambiental")
         
-        columnas_id = [c for c in ['ID', 'Id', 'id', 'Muestra'] if c in df.columns]
+        columnas_id = [c for c in ['ID', 'Id', 'id', 'Muestra'] if c in df.columns] 
         id_col = columnas_id[0] if columnas_id else df.columns[0]
         
         columnas_finales = [
