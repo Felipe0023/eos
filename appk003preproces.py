@@ -130,26 +130,31 @@ def BLOQUE003():
             st.write("---")
             st.markdown("##### 🗺️ Distribución Espacial del Índice DWQI")
             
-            # 💡 SOLUCIÓN: Recuperamos de forma segura las 48 muestras completas de la sesión
+            # Recuperamos las muestras de la sesión de forma limpia
             df_completo = st.session_state["datos_procesados_DWQI"].copy()
+            
+            # Filtro preventivo: Asegurar que solo grafique filas que tengan coordenadas reales
+            df_completo = df_completo.dropna(subset=['Latitud', 'Longitud'])
             
             columnas_id = [c for c in ['ID', 'Id', 'id', 'Muestra'] if c in df_completo.columns]
             id_hover = columnas_id[0] if columnas_id else df_completo.columns[0]
 
             # Construcción del mapa en 2D interactivo
             fig_mapa = px.scatter_mapbox(
-                df_completo,  # 👈 CAMBIADO AQUÍ: Pasamos de 'df' (9 puntos) a 'df_completo' (48 puntos)
+                df_completo,  
                 lat="Latitud",
                 lon="Longitud",
                 color="DWQI",  
-                size=np.repeat(12, len(df_completo)), # 👈 CAMBIADO AQUÍ: El tamaño ahora se repite 48 veces
+                # 💡 SOLUCIÓN CRÍTICA: Eliminamos el parámetro 'size' de aquí para evitar que Plotly rompa el índice matemático
                 color_continuous_scale=["#0000FF", "#3B82F6", "#F59E0B", "#FF0000"], 
                 range_color=[0, max(120, df_completo['DWQI'].max())], 
                 hover_name=id_hover,
                 hover_data={"DWQI": ":.2f", "Latitud": False, "Longitud": False},
                 zoom=11,
-                title="Mapeo Geográfico del DWQI Total"
+                title=f"Mapeo Geográfico del DWQI ({len(df_completo)} Puntos Detectados)"
             )
+
+
         
 
             # Estilo del mapa de fondo (OpenStreetMap no requiere tokens externos para este gráfico 2D)
