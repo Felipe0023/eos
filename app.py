@@ -264,7 +264,7 @@ else:
             app006mi.MODULO_ENTRENAMIENTO_Y_PRONOSTICO_MI()
         with tabs[6]: # Pronóstico Cd
             app007cd.MODULO_ENTRENAMIENTO_Y_PRONOSTICO_CD_INDEX()
-        with tabs[6]: # Pronóstico Cd
+        with tabs[7]: # Pronóstico HI Adulto
             app008hiadulto.MODULO_ENTRENAMIENTO_Y_PRONOSTICO_HI_ADULTO()
 
 
