@@ -239,10 +239,10 @@ else:
 
         tabs = st.tabs([
             "Ubicación",  "DWQI", 
-            "HPI/MI/Cd/HI", "Pronóstico DWQI", "Gráfico 3D"
+            "HPI/MI/Cd/HI", "Pronóstico DWQI", "Pronóstico HPI"
         ])
         
-        with tabs[0]: 
+        with tabs[0]: #Ubicación
             appk001ubicacion.BLOQUE002(K001_datos, mapbox_key) 
             appk001ubicacion.BLOQUE003(K001_datos, K001_dem, submuestreo=5)
             
@@ -251,13 +251,13 @@ else:
         with tabs[1]: # Preprocesamiento (Aquí se genera st.session_state["datos_procesados_DWQI"])
             appk003preproces.BLOQUE003() 
 
-        with tabs[2]: # Modelamiento Litológico
+        with tabs[2]: # HPI/MI/Cd/HI
             appk004modelalit.BLOQUE004() 
 
         with tabs[3]: # 🧠 PRONÓSTICO DWQI UTILIZANDO LA RED NEURONAL RECURRENTE (ELMAN RNN)
             appk005pronoslit.MODULO_ENTRENAMIENTO_Y_PRONOSTICO_DWQI()
             
-        with tabs[4]: # Gráfico 3D
+        with tabs[4]: # Pronóstico HPI
             st.info("Visualización del espacio tridimensional.")
 
 
