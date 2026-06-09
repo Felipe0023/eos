@@ -150,7 +150,7 @@ def BLOQUE003():
                 range_color=[0, max(120, df_completo['DWQI'].max())], 
                 hover_name=id_hover,
                 hover_data={"DWQI": ":.2f", "Latitud": False, "Longitud": False},
-                zoom=11,
+                
                 title=f"Mapeo Geográfico del DWQI ({len(df_completo)} Puntos Detectados)"
             )
 
@@ -159,8 +159,19 @@ def BLOQUE003():
 
             # Estilo del mapa de fondo (OpenStreetMap no requiere tokens externos para este gráfico 2D)
             fig_mapa.update_layout(
+
                 mapbox=dict(
-                    style="open-street-map"  # Forzar OpenStreetMap nativo libre
+                    style="open-street-map",
+                    
+                    # 💡 SOLUCIÓN AUTOMÁTICA: 
+                    # Detecta los extremos geográficos de tus datos actuales y ajusta el zoom perfecto.
+                    # El "+ 0.05" y "- 0.05" añade un pequeño margen de cortesía alrededor para que los puntos de los bordes no queden tapados.
+                    bounds={
+                        "west": df_completo["Longitud"].min() - 0.05, 
+                        "east": df_completo["Longitud"].max() + 0.05, 
+                        "south": df_completo["Latitud"].min() - 0.05, 
+                        "north": df_completo["Latitud"].max() + 0.05
+                    }
                 ),
                 margin={"r":0,"t":40,"l":0,"b":0},
                 coloraxis_colorbar=dict(
@@ -170,6 +181,7 @@ def BLOQUE003():
                     ticktext=["0 (Exc)", "25 (Bna)", "50 (Reg)", "75 (Pob)", "100+ (M.Pob)"]
                 )
             )
+                
             
             # Asegurar que la configuración de Plotly ignore tokens globales
             st.plotly_chart(fig_mapa, use_container_width=True, config={'mapboxAccessToken': ''})
