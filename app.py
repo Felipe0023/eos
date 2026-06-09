@@ -249,8 +249,8 @@ else:
         #with tabs[1]: 
         #   appk002zonaestud.BLOQUE001(K001_dem) 
             
-        with tabs[2]: # Preprocesamiento (Aquí se genera st.session_state["datos_procesados_DWQI"])
-            appk003preproces.BLOQUE003() 
+        #with tabs[2]: # Preprocesamiento (Aquí se genera st.session_state["datos_procesados_DWQI"])
+        #    appk003preproces.BLOQUE003() 
 
         with tabs[3]: # Modelamiento Litológico
             appk004modelalit.BLOQUE004() 
