@@ -268,7 +268,7 @@ else:
         with tabs[7]: # Pronóstico HI Adulto
             app008hiadulto.MODULO_ENTRENAMIENTO_Y_PRONOSTICO_HI_ADULTO()
         with tabs[8]: # Pronóstico HI Nino
-            app008hinino.MODULO_ENTRENAMIENTO_Y_PRONOSTICO_HI_NINO()    
+            app009hinino.MODULO_ENTRENAMIENTO_Y_PRONOSTICO_HI_NINO()    
 
 
 
