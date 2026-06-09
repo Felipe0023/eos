@@ -26,7 +26,7 @@ import appk001ubicacion
 import appk003preproces
 import appk004modelalit
 import appk005pronoslit  # 🧠 Aquí reside tu código de la Red Neuronal Recurrente Elman
-import app005hpi.py
+import app005hpi
 
 # ==========================================================================================================================================
 # CONFIGURACIÓN DE LA PÁGINA (Única declaración global)
