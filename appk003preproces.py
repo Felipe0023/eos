@@ -167,10 +167,10 @@ def BLOQUE003():
                     # Detecta los extremos geográficos de tus datos actuales y ajusta el zoom perfecto.
                     # El "+ 0.05" y "- 0.05" añade un pequeño margen de cortesía alrededor para que los puntos de los bordes no queden tapados.
                     bounds={
-                        "west": df_completo["Longitud"].min() - 0.1, 
-                        "east": df_completo["Longitud"].max() + 0.1, 
-                        "south": df_completo["Latitud"].min() - 0.1, 
-                        "north": df_completo["Latitud"].max() + 0.1
+                        "west": df_completo["Longitud"].min() - 0.05, 
+                        "east": df_completo["Longitud"].max() + 0.05, 
+                        "south": df_completo["Latitud"].min() - 0.05, 
+                        "north": df_completo["Latitud"].max() + 0.05
                     }
                 ),
                 margin={"r":0,"t":40,"l":0,"b":0},
