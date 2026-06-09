@@ -29,6 +29,7 @@ import appk005pronoslit  # 🧠 Aquí reside tu código de la Red Neuronal Recur
 import app005hpi
 import app006mi
 import app007cd
+import app008hiadulto
 
 # ==========================================================================================================================================
 # CONFIGURACIÓN DE LA PÁGINA (Única declaración global)
@@ -242,7 +243,7 @@ else:
 
         tabs = st.tabs([
             "Ubicación",  "DWQI", 
-            "HPI/MI/Cd/HI", "Pronóstico DWQI", "Pronóstico HPI", "Pronóstico MI", "Pronóstico Cd"
+            "HPI/MI/Cd/HI", "Pronóstico DWQI", "Pronóstico HPI", "Pronóstico MI", "Pronóstico Cd", "Pronóstico HI Adulto"
         ])
         
         with tabs[0]: #Ubicación
@@ -255,17 +256,17 @@ else:
         with tabs[2]: # HPI/MI/Cd/HI
             appk004modelalit.BLOQUE004() 
 
-        with tabs[3]: # 🧠 PRONÓSTICO DWQI UTILIZANDO LA RED NEURONAL RECURRENTE (ELMAN RNN)
+        with tabs[3]: # PRONÓSTICO DWQI UTILIZANDO LA RED NEURONAL RECURRENTE (ELMAN RNN)
             appk005pronoslit.MODULO_ENTRENAMIENTO_Y_PRONOSTICO_DWQI()
-            
         with tabs[4]: # Pronóstico HPI
             app005hpi.MODULO_ENTRENAMIENTO_Y_PRONOSTICO_HPI()
-
         with tabs[5]: # Pronóstico MI
             app006mi.MODULO_ENTRENAMIENTO_Y_PRONOSTICO_MI()
-
         with tabs[6]: # Pronóstico Cd
             app007cd.MODULO_ENTRENAMIENTO_Y_PRONOSTICO_CD_INDEX()
+        with tabs[6]: # Pronóstico Cd
+            app008hiadulto.MODULO_ENTRENAMIENTO_Y_PRONOSTICO_HI_ADULTO()
+
 
 
 
