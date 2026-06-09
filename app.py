@@ -22,7 +22,7 @@ import base64
 # IMPORTACIÓN DE MÓDULOS DEL ECOSISTEMA
 # ==========================================================================================================================================
 import appk001ubicacion
-#import appk002zonaestud
+
 import appk003preproces
 import appk004modelalit
 import appk005pronoslit  # 🧠 Aquí reside tu código de la Red Neuronal Recurrente Elman
@@ -238,27 +238,26 @@ else:
         st.markdown("<h3 style='text-align: center; color: #1E3A8A; font-size: 32px; font-weight: bold;'>Predicción de la calidad y riesgo del agua subterránea</h3>", unsafe_allow_html=True)
 
         tabs = st.tabs([
-            "Ubicación", "Zona de Pronóstico", "Preprocesamiento", 
-            "Modelamiento Litológico", "Pronóstico DWQI (RNN)", "Gráfico 3D"
+            "Ubicación",  "DWQI", 
+            "HPI/MI/Cd/HI", "Pronóstico DWQI", "Gráfico 3D"
         ])
         
         with tabs[0]: 
             appk001ubicacion.BLOQUE002(K001_datos, mapbox_key) 
             appk001ubicacion.BLOQUE003(K001_datos, K001_dem, submuestreo=5)
             
-        #with tabs[1]: 
-        #   appk002zonaestud.BLOQUE001(K001_dem) 
+
             
-        with tabs[2]: # Preprocesamiento (Aquí se genera st.session_state["datos_procesados_DWQI"])
+        with tabs[1]: # Preprocesamiento (Aquí se genera st.session_state["datos_procesados_DWQI"])
             appk003preproces.BLOQUE003() 
 
-        with tabs[3]: # Modelamiento Litológico
+        with tabs[2]: # Modelamiento Litológico
             appk004modelalit.BLOQUE004() 
 
-        with tabs[4]: # 🧠 PRONÓSTICO DWQI UTILIZANDO LA RED NEURONAL RECURRENTE (ELMAN RNN)
+        with tabs[3]: # 🧠 PRONÓSTICO DWQI UTILIZANDO LA RED NEURONAL RECURRENTE (ELMAN RNN)
             appk005pronoslit.MODULO_ENTRENAMIENTO_Y_PRONOSTICO_DWQI()
             
-        with tabs[5]: # Gráfico 3D
+        with tabs[4]: # Gráfico 3D
             st.info("Visualización del espacio tridimensional.")
 
 
