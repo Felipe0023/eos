@@ -5,7 +5,7 @@ import plotly.express as px
 
 def BLOQUE003():
     with st.container(border=True):
-        st.markdown("<h4 style='text-align: center;'>🚰 Evaluación de Calidad del Agua (DWQI)</h3>", unsafe_allow_html=True)
+        st.markdown("<h4 style='text-align: center;'>🚰 Evaluación de Calidad del Agua (DWQI)</h3>", unsafe_allow_html=True) 
         
         # 1. Verificar si existen datos cargados en el session_state
         if "K001_datos" not in st.session_state or st.session_state["K001_datos"] is None:
@@ -167,10 +167,10 @@ def BLOQUE003():
                     # Detecta los extremos geográficos de tus datos actuales y ajusta el zoom perfecto.
                     # El "+ 0.05" y "- 0.05" añade un pequeño margen de cortesía alrededor para que los puntos de los bordes no queden tapados.
                     bounds={
-                        "west": df_completo["Longitud"].min() - 0.05, 
-                        "east": df_completo["Longitud"].max() + 0.05, 
-                        "south": df_completo["Latitud"].min() - 0.05, 
-                        "north": df_completo["Latitud"].max() + 0.05
+                        "west": df_completo["Longitud"].min() - 0.1, 
+                        "east": df_completo["Longitud"].max() + 0.1, 
+                        "south": df_completo["Latitud"].min() - 0.1, 
+                        "north": df_completo["Latitud"].max() + 0.1
                     }
                 ),
                 margin={"r":0,"t":40,"l":0,"b":0},
