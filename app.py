@@ -26,6 +26,7 @@ import appk001ubicacion
 import appk003preproces
 import appk004modelalit
 import appk005pronoslit  # 🧠 Aquí reside tu código de la Red Neuronal Recurrente Elman
+import app005hpi.py
 
 # ==========================================================================================================================================
 # CONFIGURACIÓN DE LA PÁGINA (Única declaración global)
@@ -259,6 +260,7 @@ else:
             
         with tabs[4]: # Pronóstico HPI
             st.info("Visualización del espacio tridimensional.")
+            app005hpi.MODULO_ENTRENAMIENTO_Y_PRONOSTICO_HPI()
 
 
 
