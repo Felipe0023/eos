@@ -255,6 +255,21 @@ def MODULO_ENTRENAMIENTO_Y_PRONOSTICO_DWQI():
                     st.error(f"❌ Estructura de archivo incorrecta. El modelo de 20 variables no encuentra: {faltan_batch}")
                 else:
                     if st.button("🔮 Procesar Pronóstico Masivo de Lote", use_container_width=True):
+
+                        # ---------------------------------------------------------
+                        # [OPCIÓN A INTEGRADA] - IMPUTACIÓN POR LA MEDIA PARA PRONÓSTICO
+                        # ---------------------------------------------------------
+                        # Detectar si hay valores nulos en las columnas predictoras
+                        if df_nuevos_datos[columnas_predictores].isnull().sum().sum() > 0:
+                            # Rellenar cada valor NaN con la media de su respectiva columna
+                            df_nuevos_datos[columnas_predictores] = df_nuevos_datos[columnas_predictores].fillna(df_nuevos_datos[columnas_predictores].mean())
+                            st.info("ℹ️ Se detectaron valores nulos en el archivo CSV. Se aplicó imputación automática por la media del lote para poder calcular los pronósticos.")
+                        # ---------------------------------------------------------
+
+
+
+
+                        
                         matrix_raw = df_nuevos_datos[columnas_predictores].values
                         pronosticos_lote = pronosticar_nuevos_datos(model, scaler_X, scaler_y, matrix_raw, device)
                         
