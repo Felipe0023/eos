@@ -85,7 +85,7 @@ def BLOQUE001(df_raw, tif_bytes):
 
 def BLOQUE002(df_raw, mapbox_key):   
     with st.container(border=True):
-        st.markdown("<h4 style='text-align: center;'>Monitoreo de Perforaciones</h3>", unsafe_allow_html=True)
+        st.markdown("<h4 style='text-align: center;'>Monitoreo de Muestras</h3>", unsafe_allow_html=True)
  
         # Fila de Métricas
         c1, c2, c3 = st.columns(3)
