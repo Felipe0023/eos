@@ -9,10 +9,10 @@ import pydeck as pdk
 import os
 import io
 from io import BytesIO
-
+ 
 def BLOQUE001(df_raw, tif_bytes):
     with st.container(border=True):
-        st.markdown("<h4 style='text-align: center;'>Localización de las Perforaciones</h3>", unsafe_allow_html=True)
+        st.markdown("<h4 style='text-align: center;'>Localización de las Muestras</h3>", unsafe_allow_html=True)
 
         # --- 1. EXTRAER DATOS DEL TIF EN MEMORIA RAM ---
         try:
